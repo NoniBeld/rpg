@@ -1,0 +1,29 @@
+package com.meridia.entities;
+
+public enum SlotAnatomico {
+    // Cabeza y Rostro
+    CRANEO, MASCARA, 
+    ARETE_OREJA_IZQ, ARETE_OREJA_DER, 
+    ARETE_CEJA, ARETE_LABIO, ARETE_NARIZ, MAQUILLAJE,
+    
+    // Tronco
+    CUELLO, PECHO, CAMISA, ROPA_INTERIOR_SUP, 
+    ESPALDA, MOCHILA, ALJABA, CINTURON, CANGURERA, BOLSA,
+    
+    // Brazos y Manos
+    HOMBRO_IZQ, HOMBRO_DER, 
+    CODERA_IZQ, CODERA_DER, 
+    GUANTE_IZQ, GUANTE_DER,
+    
+    // Dedos Mano Derecha
+    ANILLO_PULGAR_DER, ANILLO_INDICE_DER, ANILLO_CORAZON_DER, ANILLO_ANULAR_DER, ANILLO_MEÑIQUE_DER,
+    // Dedos Mano Izquierda
+    ANILLO_PULGAR_IZQ, ANILLO_INDICE_IZQ, ANILLO_CORAZON_IZQ, ANILLO_ANULAR_IZQ, ANILLO_MEÑIQUE_IZQ,
+    
+    // Piernas y Pies
+    PANTALON, ROPA_INTERIOR_INF, 
+    RODILLERA_IZQ, RODILLERA_DER, 
+    CALCETIN_IZQ, CALCETIN_DER, 
+    ZAPATO_IZQ, ZAPATO_DER,
+    UÑAS_PIES // Para ese nivel de detalle que pediste
+}
