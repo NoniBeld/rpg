@@ -29,4 +29,13 @@ public class EnemigoFactory {
         l.recalcularVida();
         return l;
     }
+    
+    public static Entidad crearSlimeAgua() {
+        // Alta densidad para representar su cuerpo acuático
+        Entidad slime = new Heroe("Slime de Agua", 12.0, 2.0); 
+        slime.getAtributos().put(Atributo.VELOCIDAD, 4); // Es muy lento
+        slime.getAtributos().put(Atributo.FUERZA, 6);
+        slime.recalcularVida();
+        return slime;
+    }
 }

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
  * Representa la raíz de la ontología: el Ente.
  * Provee identidad, trazabilidad y existencia en el sistema.
  */
-public abstract class Ente {
+public class Ente {
     protected double id;
     protected String nombre;
     protected String descripcion;

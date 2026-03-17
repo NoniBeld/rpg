@@ -29,4 +29,32 @@ public class GestorEventos {
         }
         return enemigos;
     }
+    
+    public static void eventoMuroFuerza(List<Entidad> heroes, Scanner sc) {
+        System.out.println("\n--- EL SELLO DE LA CUEVA ---");
+        System.out.println("El Ser Gris choca contra el muro. Solo los huérfanos pueden pasar.");
+        System.out.println("Deben tocar el sello en el orden elemental correcto.");
+
+        String[] ordenCorrecto = {"Alejandra", "Nalanga", "Soul", "Laxir"};
+        int pasoActual = 0;
+
+        while (pasoActual < ordenCorrecto.length) {
+            System.out.println("\nFase " + (pasoActual + 1) + ": ¿Quién se acerca al muro?");
+            for (int i = 0; i < heroes.size(); i++) {
+                System.out.println(i + ". " + heroes.get(i).getNombre());
+            }
+            
+            int seleccion = sc.nextInt();
+            String nombreSeleccionado = heroes.get(seleccion).getNombre();
+
+            if (nombreSeleccionado.equals(ordenCorrecto[pasoActual])) {
+                System.out.println("¡El muro vibra en armonía con " + nombreSeleccionado + "!");
+                pasoActual++;
+            } else {
+                System.out.println("¡ZAP! El muro repele a " + nombreSeleccionado + ". El sello se reinicia.");
+                pasoActual = 0; // Reinicio del puzzle
+            }
+        }
+        System.out.println("\nEl sello se desvanece. La Cueva de los Lamentos está abierta.");
+    }
 }
