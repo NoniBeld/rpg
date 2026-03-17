@@ -15,8 +15,20 @@ import java.util.Scanner;
 public class KronikasLauncher {
 
     // Ruta definida por el arquitecto
-    private static final String RUTA_USUARIO = "D:\\Archivos\\NoniBeld\\rpg\\usuario\\perfil.txt";
-    private static final String CARPETA_USUARIO = "D:\\Archivos\\NoniBeld\\rpg\\usuario";
+	// Java unirá las piezas con el separador correcto ( \ o / )
+/*	private static final String CARPETA_USUARIO = "usuario"; 
+	private static final String RUTA_USUARIO = CARPETA_USUARIO + File.separator + "perfil.txt";
+	*/
+	
+	// Esto detecta C:\Users\Nombre o /home/nombre automáticamente
+	// Por esto (la palabra "home" es la que Java reconoce):
+	private static final String home = System.getProperty("user.home");
+	
+	// Creamos una subcarpeta oculta para no ensuciar la vista del usuario
+	// En Linux los puntos al inicio (.) ocultan la carpeta.
+	private static final String carpetaBase = home + File.separator + ".kronikas";
+	private static final String rutaPerfil = carpetaBase + File.separator + "perfil.txt";
+	private static final String rutaMods = carpetaBase + File.separator + "mods";
 
     public static void main(String[] args) {
         Scanner teclado = new Scanner(System.in);
@@ -25,7 +37,7 @@ public class KronikasLauncher {
         imprimirLento("Hola, bienvenido a Kronikas...", 50);
         System.out.println("\n"); // Salto de línea
 
-        File archivoPerfil = new File(RUTA_USUARIO);
+        File archivoPerfil = new File(/*RUTA_USUARIO*/rutaPerfil);
 
         if (!archivoPerfil.exists()) {
             // --- FLUJO USUARIO NUEVO ---
@@ -67,9 +79,9 @@ public class KronikasLauncher {
     private static void crearRegistroUsuario(String nombre) {
         try {
             // Asegurar que la carpeta exista
-            Files.createDirectories(Paths.get(CARPETA_USUARIO));
+            Files.createDirectories(Paths.get(rutaPerfil));
             
-            FileWriter escritor = new FileWriter(RUTA_USUARIO);
+            FileWriter escritor = new FileWriter(rutaPerfil);
             escritor.write(nombre);
             escritor.close();
         } catch (IOException e) {
@@ -82,7 +94,7 @@ public class KronikasLauncher {
      */
     private static String leerNombreUsuario() {
         try {
-            return new String(Files.readAllBytes(Paths.get(RUTA_USUARIO))).trim();
+            return new String(Files.readAllBytes(Paths.get(rutaPerfil))).trim();
         } catch (IOException e) {
             return "Viajero Desconocido";
         }
