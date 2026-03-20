@@ -17,6 +17,7 @@ public final class Ente {
     private final int identificadorUnico;
     private String nombre;
     private Funcion funcionActual;
+    private Potencia potenciaActual = Potencia.INTEGRO;
     
     private int puntosDeVidaActuales;
     private int puntosDeVidaMaximos;
@@ -259,7 +260,24 @@ public final class Ente {
             // Lógica de eliminación del mapa
         }
     }
-  
+    public void transformar(Potencia nuevaPotencia) {
+        this.potenciaActual = nuevaPotencia;
+        
+        switch (nuevaPotencia) {
+            case DIGERIDO -> {
+                this.nombre = "Excremento de " + this.nombre;
+                this.cambiarFuncion(Funcion.ALIMENTO); // El abono puede ser alimento para plantas
+                this.establecerValorAtributo(Atributo.SUERTE, 1); // ¡Pisar esto da suerte!
+            }
+            case QUEMADO -> {
+                this.nombre = "Cenizas de " + this.nombre;
+                this.cambiarFuncion(Funcion.OBJETO);
+            }
+            case SANGRIENTO -> this.nombre = "Restos óseos de " + this.nombre;
+        }
+        
+        Narrador.obtenerInstancia().narrar("La potencia de " + this.nombre + " ahora es: " + nuevaPotencia, 30);
+    }
     
 
     // ------------------- Getters y Setters con nombres completos

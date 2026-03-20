@@ -23,8 +23,7 @@ public final class GestorEntrada {
         this.teclado = new Scanner(System.in);
         this.escuchando = true;
     }
-
-    public void iniciarBucleEscucha(Ente jugador, MotorJuego motor) {
+    public void iniciarBucleEscucha(Ente jugador, MotorJuego motor, Escena escenaActual) {
         Narrador.obtenerInstancia().narrar(">>> Sistema de entrada listo. Escribe un comando (o 'salir'):", 20);
         
         while (escuchando) {
@@ -37,8 +36,8 @@ public final class GestorEntrada {
                 break;
             }
 
-            procesarComandoPro(entradaRaw);
-           // procesarComando(entradaRaw, jugador);
+            // CAMBIO CLAVE: Usamos el procesador con argumentos
+            procesarEntrada(entradaRaw, jugador, escenaActual);
         }
     }
     private void configurarComandos(Ente jugador) {
@@ -68,81 +67,58 @@ public final class GestorEntrada {
     	ejecutarAccion(new Orden(verbo, objetivo), jugador, null);
     }
     
-    @SuppressWarnings("null")
-	private void ejecutarAccion(Orden orden, Ente jugador, Escena escenaActual) {
-    	String nombreObjetivo = orden.objetivo();
-    	
-    	// 1. Buscar el objeto en el inventario o la escena
-        Ente item = jugador.buscarEnInventario(orden.objetivo()); 
+    private void procesarEntrada(String entradaRaw, Ente jugador, Escena escenaActual) {
+        String[] partes = entradaRaw.split(" ", 2);
+        Verbo verbo = Verbo.desdeCadena(partes[0]);
+        String objetivo = (partes.length > 1) ? partes[1] : "";
         
-     // 1. Lógica para el comando MIRAR (puede ser general o a un objeto)
-        if (orden.verbo() == Verbo.MIRAR) {
-        	if (nombreObjetivo.isEmpty()) {
-        		Narrador.obtenerInstancia().narrar("Mirar tus pertenencias", 20);
-        		jugador.mostrarContenido(0);
-        	}else {
-        		// Buscamos en alcance (Inventario + Escena)
-        		Ente algo = jugador.buscarEnAlcance(nombreObjetivo, escenaActual.obtenerPresentes());
-        		if (algo != null) {
-                    Narrador.obtenerInstancia().narrar("Observas el " + algo.obtenerNombre() + ":", 20);
-                    algo.mostrarContenido(1);
-                } else {
-                    System.out.println("No ves ningún '" + nombreObjetivo + "' por aquí.");
-                }
-            }
-            return; // Salimos ya que MIRAR no requiere el chequeo de null de abajo
-        }
-        	
-    
-
-        if (item == null) {
-            System.out.println("No encuentras el objeto: " + nombreObjetivo);
+        if (verbo == null) {
+            System.out.println("No reconozco esa acción");
             return;
         }
         
-        if (item == null) {
-            System.out.println("No tienes eso.");
-            return;
+        ejecutarAccion(new Orden(verbo, objetivo), jugador, escenaActual);
+    }
+
+    private void ejecutarAccion(Orden orden, Ente jugador, Escena escenaActual) {
+        String nombreObj = orden.objetivo();
+
+        // 1. CASO ESPECIAL: MIRAR (Puede no tener objetivo)
+        if (orden.verbo() == Verbo.MIRAR && nombreObj.isEmpty()) {
+            Narrador.obtenerInstancia().narrar("Miras tus pertenencias:", 20);
+            jugador.mostrarContenido(0);
+            return; 
         }
 
-        // 2. Lógica Multimodal según la Función
+        // 2. BÚSQUEDA ÚNICA: Buscamos el ítem una sola vez en todo el alcance
+        Ente item = jugador.buscarEnAlcance(nombreObj, escenaActual.obtenerPresentes());
+
+        if (item == null) {
+            System.out.println("No encuentras ningún '" + nombreObj + "' aquí.");
+            return;
+        }
+     // 3. LÓGICA DE VERBOS (Aquí el ítem YA existe)
         switch (orden.verbo()) {
+            case MIRAR -> {
+                Narrador.obtenerInstancia().narrar("Observas el " + item.obtenerNombre() + ":", 20);
+                item.mostrarContenido(1);
+            }
             case COMER -> {
                 if (item.obtenerFuncionActual() == Funcion.ALIMENTO) {
-                    jugador.interactuar(item); // Ya lo cura y cambia su estado
+                    jugador.interactuar(item); // Implementará tu Sistema Digestivo pronto
                 } else {
-                    jugador.hablar("No puedo comer un " + item.obtenerNombre() + ", me rompería los dientes.");
+                    jugador.hablar("Intentar comer un " + item.obtenerNombre() + " no parece buena idea.");
                 }
             }
             case LANZAR -> {
-                // Aquí la manzana se comporta como ARMA temporalmente
-                float daño = jugador.obtenerValorAtributo(Atributo.FUERZA) * 0.5f;
+                // Lógica de proyectil
                 item.cambiarFuncion(Funcion.ARMA);
-                System.out.println("¡Lanzas el " + item.obtenerNombre() + " causando " + daño + " de impacto!");
+                System.out.println("¡Lanzas el " + item.obtenerNombre() + "!");
             }
-            case CANALIZAR -> {
-                if (item.obtenerFuncionActual() == Funcion.CANALIZADOR || item.obtenerFuncionActual() == Funcion.OBJETO) {
-                    jugador.hablar("Concentro mi energía a través de " + item.obtenerNombre());
-                    // Lógica de conjuro
-                }
-            }
-            case MIRAR ->{
-            	String objetivo = null;
-				if (objetivo.isEmpty()) {
-                    Narrador.obtenerInstancia().narrar("Miras tus pertenencias:", 20);
-                    jugador.mostrarContenido(0);
-                } else {
-                    Ente algo = jugador.buscarEnAlcance(objetivo, escenaActual.obtenerPresentes());
-                    if (algo != null) {
-                        Narrador.obtenerInstancia().narrar("Observas el " + algo.obtenerNombre() + ":", 20);
-                        algo.mostrarContenido(1);
-                    }
-            }}
-            
-            // ... otros casos para RECEPTOR, TRANSMISOR, etc.
+            // ... otros casos
+            default -> System.out.println("Aún no sé cómo " + orden.verbo() + " un objeto.");
         }
     }
-    
 /*
     private void procesarComando(String comando, Ente jugador) {
       switch (comando) {
