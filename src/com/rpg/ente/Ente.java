@@ -279,7 +279,14 @@ public final class Ente {
         Narrador.obtenerInstancia().narrar("La potencia de " + this.nombre + " ahora es: " + nuevaPotencia, 30);
     }
     
-
+    public void alSerConsumido() {
+        if (this.nombre.contains("Semilla")) {
+            this.hablar("Espero que la tierra donde caiga sea fértil...");
+        } else {
+            this.hablar("Mi materia servirá para otro propósito.");
+        }
+    }
+    
     // ------------------- Getters y Setters con nombres completos
     
     
