@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import herramientas.clima.Clima;
 import herramientas.texto.Narrador;
-import herramientas.tiempo.Clima;
 
 /**
  * Representa cualquier objeto con existencia en el mundo del juego.

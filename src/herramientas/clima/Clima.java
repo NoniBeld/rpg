@@ -1,4 +1,4 @@
-package herramientas.tiempo;
+package herramientas.clima;
 
 /**
  * Representa las condiciones atmosféricas actuales.

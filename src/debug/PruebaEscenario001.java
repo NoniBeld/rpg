@@ -3,7 +3,8 @@
 	import com.rpg.ente.*;
 	import com.rpg.logica.Escena;
 	import herramientas.tiempo.*;
-	import herramientas.texto.Narrador;
+import herramientas.clima.Clima;
+import herramientas.texto.Narrador;
 
 	public class PruebaEscenario001 {
 	    public static void main(String[] args) {

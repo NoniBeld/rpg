@@ -2,7 +2,8 @@ package debug;
 
 import com.rpg.ente.*;
 import com.rpg.logica.Coliseo;
-import herramientas.tiempo.Clima;
+
+import herramientas.clima.Clima;
 
 public class PruebaClima000{
     public static void main(String[] args) {

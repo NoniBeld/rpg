@@ -3,9 +3,10 @@ package com.rpg.logica;
 import com.rpg.ente.Ente;
 import java.util.ArrayList;
 import java.util.List;
+
+import herramientas.clima.Clima;
 import herramientas.texto.Narrador;
 import herramientas.tiempo.CalendarioLunar;
-import herramientas.tiempo.Clima;
 
 public final class Escena {
 	private String nombre;

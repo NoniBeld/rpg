@@ -1,9 +1,10 @@
 package debug;
 
 import com.rpg.motor.MotorJuego;
+
+import herramientas.clima.Clima;
 import herramientas.tiempo.CalendarioLunar;
 import com.rpg.logica.Escena;
-import herramientas.tiempo.Clima;
 
 public class PruebaMotor000 {
     public static void main(String[] args) {

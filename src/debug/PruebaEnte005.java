@@ -1,7 +1,8 @@
 package debug;
 
 import com.rpg.ente.*;
-import herramientas.tiempo.Clima;
+
+import herramientas.clima.Clima;
 import herramientas.texto.Narrador;
 
 public class PruebaEnte005 {
