@@ -12,5 +12,6 @@ public enum Funcion {
     CANALIZADOR, // Ente que fluye energía (mágica o física).
     RECEPTOR,    // Ente diseñado para recibir señales o impactos.
     TRANSMISOR,  // Ente que emite información o energía al mundo.
-    LOCALIZADOR  // Ente con consciencia espacial aumentada.
+    LOCALIZADOR,  // Ente con consciencia espacial aumentada.
+    MIRAR
 }

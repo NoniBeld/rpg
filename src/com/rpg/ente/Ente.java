@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import herramientas.texto.Narrador;
 import herramientas.tiempo.Clima;
@@ -28,7 +29,8 @@ public final class Ente {
  // Almacenamos los valores de los atributos de forma dinámica
     private final Map<Atributo, Integer> estadisticas;
     private final Map<ParteDelCuerpo, Integer> integridadFisica; // Salud por parte del cuerpo
-    	
+    private final Map<Funcion, Consumer<Ente>> comportamientos = new EnumMap<>(Funcion.class);
+    
     // Atributos de estado (POD - Programación Orientada a Datos)
     // En el futuro, estos podrían ser objetos "Componente"
     private float posicionX, posicionY, posicionZ;
@@ -64,10 +66,56 @@ public final class Ente {
         return estadisticas.getOrDefault(atributo, 0);
     }
 
- // --- Métodos de Acción ---
-    public void teletransportar(float x, float y, float z) {
-        this.posicionX = x; this.posicionY = y; this.posicionZ = z;
+ // ---Inventario---
+    
+
+    /**
+     * Busca un ente dentro del inventario por su nombre.
+     * @param nombreObjetivo El texto introducido por el usuario.
+     * @return El Ente encontrado o null si no existe.
+     */
+    public Ente buscarEnInventario(String nombreObjetivo) {
+        return this.inventario.stream()
+            .filter(e -> e.obtenerNombre().equalsIgnoreCase(nombreObjetivo))
+            .findFirst()
+            .orElse(null); 
     }
+    
+    /**
+     * Busca un objetivo primero en el inventario y luego en la escena actual.
+     */
+    public Ente buscarEnAlcance(String nombre, List<Ente> entesEnEscena) {
+        // 1. Buscar en lo que cargo (Prioridad)
+        Ente encontrado = buscarEnInventario(nombre);
+        
+        // 2. Si no lo tengo, buscar en el suelo (Escena)
+        if (encontrado == null) {
+            encontrado = entesEnEscena.stream()
+                .filter(e -> e.obtenerNombre().equalsIgnoreCase(nombre))
+                .findFirst()
+                .orElse(null);
+        }
+        
+        return encontrado;
+    }
+    
+    public void mostrarContenido(int nivel) {
+        String sangria = "  ".repeat(nivel); // Para crear jerarquía visual
+        
+        if (this.inventario.isEmpty()) {
+            System.out.println(sangria + "- (Vacío)");
+            return;
+        }
+
+        for (Ente e : this.inventario) {
+            System.out.println(sangria + "└─ " + e.obtenerNombre() + " [" + e.obtenerFuncionActual() + "]");
+            // Si el objeto es un CONTENEDOR, mostramos su interior también
+            if (e.obtenerFuncionActual() == Funcion.CONTENEDOR) {
+                e.mostrarContenido(nivel + 1);
+            }
+        }
+    }
+    
     
     @Override
     public String toString() {
@@ -75,6 +123,9 @@ public final class Ente {
                 identificadorUnico, nombre, funcionActual, posicionX, posicionY, posicionZ);
     }
 
+    
+    //--------------------   Funciones  ----------------------------------------------
+    
     public void hablar(String mensaje) {
     	String formato = String.format("[%s]: %s", this.obtenerNombre(), mensaje);    	
     	herramientas.texto.Narrador.obtenerInstancia().narrar(formato, 40);
@@ -88,10 +139,20 @@ public final class Ente {
     
     public void interactuar(Ente objetivo) {
     	switch (objetivo.obtenerFuncionActual()) {
-    	case ALIMENTO:
-    		consumir(objetivo);
-    		break;
+    	case ALIMENTO -> {
+    	consumir(objetivo);
+    		this.hablar(objetivo.obtenerNombre() + ". es comido." );
     	}
+    	case ARMA ->{ 
+    		recoger(objetivo);
+            this.hablar("Esta arma me será útil para el Coliseo.");
+            }
+        case SUJETO->{
+            this.hablar("Saludos, " + objetivo.obtenerNombre() + ". ¿Qué haces en este lugar?");
+        }
+        default->
+            this.hablar("Es un " + objetivo.obtenerNombre() + "... no parece hacer nada.");
+      	}
     }
     
     private void consumir(Ente alimento) {
@@ -101,6 +162,7 @@ public final class Ente {
     	Narrador.obtenerInstancia().narrar(this.nombre +" consume " + alimento.obtenerNombre() + ". vida actual: " + this.puntosDeVidaActuales, 40);
     	alimento.cambiarFuncion(Funcion.OBJETO);
     }
+
     // --- NUEVA FUNCIÓN: Evolución de Función ---
     public void cambiarFuncion(Funcion nuevaFuncion) {
         herramientas.texto.Narrador.obtenerInstancia().narrar(
@@ -108,6 +170,28 @@ public final class Ente {
             nombre, funcionActual, nuevaFuncion), 30);
         this.funcionActual = nuevaFuncion;
     }
+    
+    private void inicializarComportamientos() {
+        comportamientos.put(Funcion.ALIMENTO, this::consumir);
+        comportamientos.put(Funcion.ARMA, obj -> {
+            recoger(obj);
+            this.hablar("¡Un arma nueva!");
+        });
+        comportamientos.put(Funcion.SUJETO, obj -> this.hablar("Hola, " + obj.obtenerNombre()));
+    }
+
+    public void interactuarPro(Ente objetivo) {
+        comportamientos.getOrDefault(objetivo.obtenerFuncionActual(), 
+            obj -> this.hablar("No sé qué hacer con esto.")
+        ).accept(objetivo);
+    }
+
+  //--------------------   Movimiento  ----------------------------------------------
+    
+    public void teletransportar(float x, float y, float z) {
+        this.posicionX = x; this.posicionY = y; this.posicionZ = z;
+    }
+    
     /**
      * Calcula la distancia física entre este ente y otro en el espacio 3D.
      */
@@ -125,6 +209,8 @@ public final class Ente {
         this.posicionY += deltaY;
     }
 
+    //--------------------   Fisica  ----------------------------------------------
+    
     /**
      * Determina si otro ente está dentro de un rango de visión o percepción.
      */
@@ -173,13 +259,21 @@ public final class Ente {
             // Lógica de eliminación del mapa
         }
     }
+  
     
 
+    // ------------------- Getters y Setters con nombres completos
     
- // Getters y Setters
-    // Getters y Setters con nombres completos
+    
     public int obtenerIdentificadorUnico(){ return identificadorUnico; }
     public String obtenerNombre() { return nombre;  	}
     public int obtenerVidaActual() { return puntosDeVidaActuales; }
     public Funcion obtenerFuncionActual() { return funcionActual; }
+
+	public void cambiarNombre(String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }

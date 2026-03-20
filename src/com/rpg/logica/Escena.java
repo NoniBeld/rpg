@@ -46,4 +46,15 @@ public final class Escena {
             e.sentirClima(clima);
         }
     }
+    
+    public void actualizarEntidades(double delta) {
+        for (Ente e : presentes) {
+            e.actualizar(delta); // Este es el método que ya definimos en Ente
+        }
+    }
+
+	public List<Ente> obtenerPresentes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

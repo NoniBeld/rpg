@@ -11,7 +11,7 @@ public final class RelojPrincipal {
     private long tiempoUltimaActualizacion;
     private double factorEscalaTiempo = 1.0; // 1.0 = Tiempo real, 2.0 = El doble de rápido
 
-    private RelojPrincipal() {
+    public RelojPrincipal() {
         this.tiempoInicial = System.nanoTime();
         this.tiempoUltimaActualizacion = tiempoInicial;
     }
