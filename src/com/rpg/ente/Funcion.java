@@ -1,3 +1,15 @@
 package com.rpg.ente;
 
-public enum Funcion { Objeto, Alimento, Arma, Contenedor, Canalizador, Receptor, Transmisor, Localizador }
+/**
+ * Define la categoría funcional de un ente en el mundo.
+ */
+public enum Funcion { 
+    OBJETO, 
+    ALIMENTO, 
+    ARMA, 
+    CONTENEDOR, 
+    CANALIZADOR, 
+    RECEPTOR, 
+    TRANSMISOR, 
+    LOCALIZADOR 
+}

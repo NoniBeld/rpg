@@ -1,3 +1,16 @@
 package com.rpg.ente;
 
-public enum Atributo {Vida, Fuerza, Agildad, Destreza, Inteligencia, Sabiduria, Carisma, Suerte, Critico }
+/**
+ * Estadísticas base que definen las capacidades de combate y acción.
+ */
+public enum Atributo {
+    VIDA, 
+    FUERZA, 
+    AGILIDAD, 
+    DESTREZA, 
+    INTELIGENCIA, 
+    SABIDURIA, 
+    CARISMA, 
+    SUERTE, 
+    CRITICO 
+}
