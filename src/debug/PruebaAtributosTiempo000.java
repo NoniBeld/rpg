@@ -1,6 +1,8 @@
 package debug;
 
 import com.rpg.ente.*;
+
+import herramientas.clima.Estacion;
 import herramientas.tiempo.*;
 
 public class PruebaAtributosTiempo000 {

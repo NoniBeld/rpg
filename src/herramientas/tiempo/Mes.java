@@ -1,5 +1,7 @@
 package herramientas.tiempo;
 
+import herramientas.clima.Estacion;
+
 /**
  * Define cada mes del año místico vinculado a su estación.
  */

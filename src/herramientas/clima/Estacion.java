@@ -1,4 +1,4 @@
-package herramientas.tiempo;
+package herramientas.clima;
 
 /**
  * Define las grandes etapas climáticas del mundo.

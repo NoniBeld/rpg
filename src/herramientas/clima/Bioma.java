@@ -1,8 +1,6 @@
-package com.rpg.logica;
+package herramientas.clima;
 
 import com.rpg.ente.Funcion;
-
-import herramientas.clima.Clima;
 
 import java.util.List;
 
