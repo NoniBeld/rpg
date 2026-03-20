@@ -28,8 +28,8 @@ import herramientas.texto.Narrador;
 	        Ente jugador = Creador.obtenerInstancia().crearNuevoEnte("Erick", Funcion.SUJETO);
 	        Ente slimeHielo = Creador.obtenerInstancia().crearNuevoEnte("Slime de Hielo", Funcion.ALIMENTO);
 	        
-	        bosque.agreagarEnte(jugador);
-	        bosque.agreagarEnte(slimeHielo);
+	        bosque.agregarEnte(jugador);
+	        bosque.agregarEnte(slimeHielo);
 
 	        // 5. ¡ACCIÓN!
 	        bosque.jugar();

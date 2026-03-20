@@ -15,9 +15,9 @@ public class PruebaEscenario000 {
         Ente slimeComida = Creador.obtenerInstancia().crearNuevoEnte("Slime de Uva", Funcion.ALIMENTO);
         Ente daga = Creador.obtenerInstancia().crearNuevoEnte("Daga Oxidada", Funcion.ARMA);
 
-        calabozo.agreagarEnte(jugador);
-        calabozo.agreagarEnte(slimeComida);
-        calabozo.agreagarEnte(daga);
+        calabozo.agregarEnte(jugador);
+        calabozo.agregarEnte(slimeComida);
+        calabozo.agregarEnte(daga);
 
         // 3. Ejecutar Narrativa
         calabozo.jugar();

@@ -25,7 +25,7 @@ public final class Escena {
         this.presentes = new ArrayList<>();
     }
     
-    public void agreagarEnte(Ente ente ) {
+    public void agregarEnte(Ente ente ) {
         this.presentes.add(ente);
         
     }

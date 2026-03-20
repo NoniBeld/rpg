@@ -124,8 +124,27 @@ public final class Ente {
                 identificadorUnico, nombre, funcionActual, posicionX, posicionY, posicionZ);
     }
 
+    public void decidirAccion(List<Ente> otrosEnEscena) {
+        if (this.obtenerValorAtributo(Atributo.VIDA) < 50) {
+            // Si tiene poca vida, busca comida
+            Ente presa = otrosEnEscena.stream()
+                .filter(e -> e != this && e.obtenerFuncionActual() == Funcion.ALIMENTO)
+                .findFirst().orElse(null);
+                
+            if (presa != null && calcularDistancia(presa) < 2.0f) {
+                this.interactuar(presa); // Aquí se dispara el Sistema Digestivo
+            } else if (presa != null) {
+                this.moverHacia(presa);
+            }
+        }
+    }
     
-    //--------------------   Funciones  ----------------------------------------------
+    private void moverHacia(Ente presa) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	//--------------------   Funciones  ----------------------------------------------
     
     public void hablar(String mensaje) {
     	String formato = String.format("[%s]: %s", this.obtenerNombre(), mensaje);    	

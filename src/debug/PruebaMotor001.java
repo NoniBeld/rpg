@@ -16,7 +16,7 @@ public class PruebaMotor001 {
         
         // 3. Iniciamos la Entrada (Hilo principal)
         GestorEntrada entrada = new GestorEntrada();
-        entrada.iniciarBucleEscucha(erick, motor);
+        entrada.iniciarBucleEscucha(erick, motor, null);
         
         System.out.println(">>> Programa finalizado con éxito.");
     }
