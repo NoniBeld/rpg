@@ -306,18 +306,24 @@ public final class Ente {
         }
     }
     
-    // ------------------- Getters y Setters con nombres completos
+  
+ // En com.rpg.ente.Ente
+    /**
+     * Permite que el Ente cambie su identidad nominal tras un evento (digestión, evolución, etc.)
+     */
+    public void cambiarNombre(String nuevoNombre) {
+        Narrador.obtenerInstancia().narrar(
+            String.format("¡La esencia de %s ha mutado! Ahora se conoce como: %s", this.nombre, nuevoNombre), 
+            30
+        );
+        this.nombre = nuevoNombre;
+    }
+
+  // ------------------- Getters y Setters con nombres completos
     
     
     public int obtenerIdentificadorUnico(){ return identificadorUnico; }
     public String obtenerNombre() { return nombre;  	}
     public int obtenerVidaActual() { return puntosDeVidaActuales; }
     public Funcion obtenerFuncionActual() { return funcionActual; }
-
-	public void cambiarNombre(String string) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 }
