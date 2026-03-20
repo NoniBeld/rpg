@@ -1,8 +1,11 @@
 package com.rpg.ente;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
+import herramientas.texto.Narrador;
 import herramientas.tiempo.Clima;
 
 /**
@@ -19,6 +22,8 @@ public final class Ente {
 	private EstadoMateria estadoActual;
 
     private float temperaturaIdeal = 20.0f; // Por defecto 20°C
+    
+    private List<Ente> inventario = new ArrayList<>();
         
  // Almacenamos los valores de los atributos de forma dinámica
     private final Map<Atributo, Integer> estadisticas;
@@ -74,20 +79,35 @@ public final class Ente {
     	String formato = String.format("[%s]: %s", this.obtenerNombre(), mensaje);    	
     	herramientas.texto.Narrador.obtenerInstancia().narrar(formato, 40);
     }
-    // Métodos para modificar el estado sin destruir el objeto
-    public void mover(float deltaX, float deltaY) {
-        this.posicionX += deltaX;
-        this.posicionY += deltaY;
+    public void recoger(Ente objeto) {
+    	if(objeto.obtenerFuncionActual() != Funcion.SUJETO) {
+    		this.inventario.add(objeto);
+    		Narrador.obtenerInstancia().narrar(this.nombre + "ha Guardado " + objeto.obtenerNombre(), 30);
+    	}
     }
-
-    // Getters y Setters con nombres completos
-    public int obtenerIdentificadorUnico() {
-    	return identificadorUnico;
-    	}
-    public String obtenerNombre() { 
-    	return nombre; 
-    	}
     
+    public void interactuar(Ente objetivo) {
+    	switch (objetivo.obtenerFuncionActual()) {
+    	case ALIMENTO:
+    		consumir(objetivo);
+    		break;
+    	}
+    }
+    
+    private void consumir(Ente alimento) {
+    	int nutricion = 20;
+    	this.recibirImpacto(-nutricion);
+    	
+    	Narrador.obtenerInstancia().narrar(this.nombre +" consume " + alimento.obtenerNombre() + ". vida actual: " + this.puntosDeVidaActuales, 40);
+    	alimento.cambiarFuncion(Funcion.OBJETO);
+    }
+    // --- NUEVA FUNCIÓN: Evolución de Función ---
+    public void cambiarFuncion(Funcion nuevaFuncion) {
+        herramientas.texto.Narrador.obtenerInstancia().narrar(
+            String.format("¡Atención! %s ha dejado de ser %s para convertirse en %s.", 
+            nombre, funcionActual, nuevaFuncion), 30);
+        this.funcionActual = nuevaFuncion;
+    }
     /**
      * Calcula la distancia física entre este ente y otro en el espacio 3D.
      */
@@ -98,6 +118,11 @@ public final class Ente {
 
         // Aplicamos Pitágoras: d = sqrt(dx² + dy² + dz²)
         return (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+    }
+    // Métodos para modificar el estado sin destruir el objeto
+    public void mover(float deltaX, float deltaY) {
+        this.posicionX += deltaX;
+        this.posicionY += deltaY;
     }
 
     /**
@@ -149,15 +174,12 @@ public final class Ente {
         }
     }
     
- // --- NUEVA FUNCIÓN: Evolución de Función ---
-    public void cambiarFuncion(Funcion nuevaFuncion) {
-        herramientas.texto.Narrador.obtenerInstancia().narrar(
-            String.format("¡Atención! %s ha dejado de ser %s para convertirse en %s.", 
-            nombre, funcionActual, nuevaFuncion), 30);
-        this.funcionActual = nuevaFuncion;
-    }
+
     
  // Getters y Setters
+    // Getters y Setters con nombres completos
+    public int obtenerIdentificadorUnico(){ return identificadorUnico; }
+    public String obtenerNombre() { return nombre;  	}
     public int obtenerVidaActual() { return puntosDeVidaActuales; }
     public Funcion obtenerFuncionActual() { return funcionActual; }
 }

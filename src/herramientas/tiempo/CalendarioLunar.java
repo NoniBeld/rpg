@@ -24,7 +24,7 @@ public final class CalendarioLunar {
             anio++;
         }
     }
-
+/*
     public void mostrarFecha() {
         Mes mesActual = Mes.values()[indiceMes];
         DiaSemana diaActual = DiaSemana.values()[indiceDiaSemana];
@@ -33,5 +33,16 @@ public final class CalendarioLunar {
             diaActual, diaMes, mesActual, mesActual.obtenerEstacion(), anio);
             
         herramientas.texto.Narrador.obtenerInstancia().narrar(log, 20);
+    }
+    */
+   
+    
+    public String obtenerFechaFormateada() { // Cambiamos el nombre para que sea más descriptivo
+        Mes mesActual = Mes.values()[indiceMes];
+        DiaSemana diaActual = DiaSemana.values()[indiceDiaSemana];
+        
+        // Retornamos el String en lugar de llamar al Narrador aquí dentro
+        return String.format("[%s] Día %d de %s (%s) - Año %d", 
+            diaActual, diaMes, mesActual, mesActual.obtenerEstacion(), anio);
     }
 }

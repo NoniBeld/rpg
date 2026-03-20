@@ -8,7 +8,7 @@ public class PruebaTiempo001 {
         
         // Simulamos el paso de un mes entero (28 días)
         for(int i = 0; i < 30; i++) {
-            calendario.mostrarFecha();
+            calendario.obtenerFechaFormateada();
             calendario.avanzarDia();
         }
     }
