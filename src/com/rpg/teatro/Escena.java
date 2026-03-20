@@ -1,6 +1,8 @@
 package com.rpg.teatro;
 
 import com.rpg.ente.Ente;
+import com.rpg.ente.Tamaño;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +55,17 @@ public final class Escena {
             e.actualizar(delta); // Este es el método que ya definimos en Ente
         }
     }
-
+ // En Escena.java
+    public String obtenerDescripcion(Ente observador) {
+        Tamaño escala = observador.obtenerTamaño();
+        
+        return switch (escala) {
+            case MEDIO -> "Ves un lago tranquilo con una pared de piedra al fondo.";
+            case COLOSAL -> "Ves un pequeño charco acumulado en una grieta de tu jardín.";
+            case MINUSCULO -> "Estás frente a una muralla de metal ciclópea que retiene un océano infinito.";
+            default -> "Un paisaje cuya escala te resulta incomprensible.";
+        };
+    }
     public List<Ente> obtenerPresentes() {
         // Si por alguna razón es null, devolvemos una lista vacía para evitar que el motor explote
         if (this.presentes == null) {
