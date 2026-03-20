@@ -1,7 +1,7 @@
 package debug;
 
 import com.rpg.ente.*;
-import com.rpg.logica.Coliseo;
+import com.rpg.teatro.Coliseo;
 
 import herramientas.clima.Clima;
 

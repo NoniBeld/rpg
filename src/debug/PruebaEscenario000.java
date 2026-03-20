@@ -3,7 +3,7 @@ package debug;
 import com.rpg.ente.Creador;
 import com.rpg.ente.Ente;
 import com.rpg.ente.Funcion;
-import com.rpg.logica.Escena;
+import com.rpg.teatro.Escena;
 
 public class PruebaEscenario000 {
 	public static void main(String[] args) {

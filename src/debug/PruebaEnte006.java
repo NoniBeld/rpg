@@ -2,7 +2,7 @@ package debug;
 
 import com.rpg.combate.ArbitroCombate;
 import com.rpg.ente.*;
-import com.rpg.logica.Escena;
+import com.rpg.teatro.Escena;
 
 import herramientas.clima.Clima;
 import herramientas.tiempo.*;

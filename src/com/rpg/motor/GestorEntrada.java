@@ -8,7 +8,7 @@ import herramientas.texto.Narrador;
 import com.rpg.ente.Atributo;
 import com.rpg.ente.Ente;
 import com.rpg.ente.Funcion;
-import com.rpg.logica.Escena;
+import com.rpg.teatro.Escena;
 
 /**
  * Escucha y procesa los comandos del jugador en la consola.

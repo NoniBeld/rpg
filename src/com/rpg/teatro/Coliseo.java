@@ -1,4 +1,4 @@
-package com.rpg.logica;
+package com.rpg.teatro;
 
 import com.rpg.ente.Ente;
 import com.rpg.ente.Atributo;

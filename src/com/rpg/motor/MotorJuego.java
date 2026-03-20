@@ -2,8 +2,10 @@ package com.rpg.motor;
 
 import herramientas.tiempo.RelojPrincipal;
 import herramientas.tiempo.CalendarioLunar;
+
+import com.rpg.teatro.Escena;
+
 import herramientas.texto.Narrador;
-import com.rpg.logica.Escena;
 
 /**
  * El motor principal que mantiene el mundo vivo.

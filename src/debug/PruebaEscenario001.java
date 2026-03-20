@@ -1,8 +1,9 @@
  package debug;
 
 	import com.rpg.ente.*;
-	import com.rpg.logica.Escena;
-	import herramientas.tiempo.*;
+import com.rpg.teatro.Escena;
+
+import herramientas.tiempo.*;
 import herramientas.clima.Clima;
 import herramientas.texto.Narrador;
 
