@@ -5,9 +5,12 @@ import java.util.Map;
 import java.util.Scanner;
 import herramientas.texto.Narrador;
 
+import com.rpg.combate.ArbitroCombate;
+import com.rpg.combate.AtaqueBase;
 import com.rpg.ente.Atributo;
 import com.rpg.ente.Ente;
 import com.rpg.ente.Funcion;
+import com.rpg.ente.ParteDelCuerpo;
 import com.rpg.teatro.Escena;
 
 /**
@@ -114,6 +117,17 @@ public final class GestorEntrada {
                 // Lógica de proyectil
                 item.cambiarFuncion(Funcion.ARMA);
                 System.out.println("¡Lanzas el " + item.obtenerNombre() + "!");
+            }
+            case ATACAR -> {
+                // Si el usuario escribió "atacar slime ojo", 'objetivo' tiene "slime ojo"
+                String[] info = nombreObj.split(" ");
+                String nombreEnte = info[0];
+                String parteNombre = (info.length > 1) ? info[1] : "CUERPO";
+
+                Ente victima = jugador.buscarEnAlcance(nombreEnte, escenaActual.obtenerPresentes());
+                ParteDelCuerpo parte = ParteDelCuerpo.valueOf(parteNombre.toUpperCase());
+
+                ArbitroCombate.procesarAtaqueDirigido(jugador, victima, AtaqueBase.CABEZAZO, parte);
             }
             // ... otros casos
             default -> System.out.println("Aún no sé cómo " + orden.verbo() + " un objeto.");

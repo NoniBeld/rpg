@@ -49,11 +49,12 @@ public final class Ente {
         this.estadoActual = EstadoMateria.SOLIDO;
         
         this.estadisticas = new EnumMap<>(Atributo.class);
-        this.integridadFisica = new EnumMap<>(ParteDelCuerpo.class);
+     //   this.integridadFisica = new EnumMap<>(ParteDelCuerpo.class);
         
      // Inicializamos vida por defecto
         this.puntosDeVidaMaximos = 10;
         this.puntosDeVidaActuales = 10;
+		this.integridadFisica = new EnumMap<>(ParteDelCuerpo.class);
         
         inicializarEnte();
     
@@ -63,8 +64,30 @@ public final class Ente {
         // Por defecto todos los entes nacen con 0 en todo
     	for (Atributo a : Atributo.values()) estadisticas.put(a, 0);
         for (ParteDelCuerpo p : ParteDelCuerpo.values()) integridadFisica.put(p, 100); // 100% salud
+        
+        inicializarAnatomia();
     }
-    
+    private void inicializarAnatomia() {
+        for (ParteDelCuerpo parte : ParteDelCuerpo.values()) {
+            // Usamos la salud base definida en el Enum ParteDelCuerpo
+            this.integridadFisica.put(parte, parte.saludBase);
+        }
+    }
+    public void recibirImpactoLocalizado(int daño, ParteDelCuerpo zona) {
+        int saludZona = integridadFisica.getOrDefault(zona, 0);
+        int nuevaSaludZona = Math.max(0, saludZona - daño);
+        
+        integridadFisica.put(zona, nuevaSaludZona);
+
+        // El daño a la zona se transmite al cuerpo principal (puntosDeVidaActuales)
+        // aplicando el multiplicador de importancia de esa parte
+        int dañoAlTotal = (int) (daño * zona.multiplicadorDañoAlTotal);
+        this.recibirImpacto(dañoAlTotal);
+
+        if (nuevaSaludZona <= 0) {
+            Narrador.obtenerInstancia().narrar("¡La parte [" + zona + "] de " + this.nombre + " ha sido destrozada!", 20);
+        }
+    }
     public void establecerValorAtributo(Atributo atributo, int valor) {
         estadisticas.put(atributo, valor);
     }
@@ -329,11 +352,51 @@ public final class Ente {
         );
         this.nombre = nuevoNombre;
     }
+    
+    public void morir(Integridad integridad) {
+        this.estadoActual = EstadoMateria.SOLIDO; // O ETÉREO si es místico
+        
+        // Si está INTACTO, podemos extraer el "Corazón de Slime"
+        if (integridad == Integridad.INTACTO) {
+            Ente corazon = Creador.obtenerInstancia().crearNuevoEnte("Corazón Puro", Funcion.ALIMENTO);
+            this.inventario.add(corazon);
+        }
+        
+        // Soltamos todo al suelo de la Escena
+        this.hablar("Mi forma física se desmorona...");
+    }
 
+    public void ejecutarDeshuesar(Ente cadaver) {
+        for (ParteDelCuerpo parte : ParteDelCuerpo.values()) {
+            int saludRestante = cadaver.obtenerSaludDeParte(parte);
+            
+            if (saludRestante > 0) {
+                // Si la parte está sana, se extrae como objeto
+                Ente trofeo = Creador.obtenerInstancia().crearNuevoEnte(
+                    "Resto de " + parte + " de " + cadaver.obtenerNombre(), 
+                    Funcion.OBJETO
+                );
+                this.inventario.add(trofeo);
+                System.out.println("Has extraído con éxito: " + trofeo.obtenerNombre());
+            } else {
+                System.out.println("El " + parte + " de " + cadaver.obtenerNombre() + " está demasiado dañado.");
+            }
+        }
+    }
+    
+    public int obtenerSaludDeParte(ParteDelCuerpo parte) {
+        return integridadFisica.getOrDefault(parte, 0);
+    }
+
+    // Para que el Árbitro y otros sistemas lean la vida total
+    public int obtenerVidaMax() {
+        return puntosDeVidaMaximos;
+    }
   // ------------------- Getters y Setters con nombres completos
     
-    
-    public int obtenerIdentificadorUnico(){ return identificadorUnico; }
+
+
+	public int obtenerIdentificadorUnico(){ return identificadorUnico; }
     public String obtenerNombre() { return nombre;  	}
     public int obtenerVidaActual() { return puntosDeVidaActuales; }
     public Funcion obtenerFuncionActual() { return funcionActual; }
