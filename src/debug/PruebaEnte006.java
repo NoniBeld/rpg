@@ -1,5 +1,6 @@
 package debug;
 
+import com.rpg.combate.ArbitroCombate;
 import com.rpg.ente.*;
 import com.rpg.logica.Escena;
 
@@ -43,6 +44,8 @@ public class PruebaEnte006 {
             if (cazador != presa && cazador.percibir(presa, 2.0f)) {
                 cazador.hablar("¡Tengo hambre de " + presa.obtenerNombre() + "!");
                 cazador.interactuar(presa);
+            }else {
+            	ArbitroCombate.procesarDuelo(cazador, presa, AtaqueBase.CABEZAZO);
             }
         }
     }

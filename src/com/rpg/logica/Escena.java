@@ -54,8 +54,11 @@ public final class Escena {
         }
     }
 
-	public List<Ente> obtenerPresentes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public List<Ente> obtenerPresentes() {
+        // Si por alguna razón es null, devolvemos una lista vacía para evitar que el motor explote
+        if (this.presentes == null) {
+            this.presentes = new ArrayList<>();
+        }
+        return this.presentes;
+    }
 }
