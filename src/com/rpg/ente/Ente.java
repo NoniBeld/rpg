@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.rpg.combate.AtaqueBase;
+import com.rpg.combate.DefensaBase;
+import com.rpg.combate.MagiaBase;
+
 import herramientas.clima.Clima;
 import herramientas.texto.Narrador;
 
@@ -24,7 +28,9 @@ public final class Ente {
 	private EstadoMateria estadoActual;
 
     private float temperaturaIdeal = 20.0f; // Por defecto 20°C
-    
+    private List<AtaqueBase> ataquesConocidos = new ArrayList<>();
+    private List<MagiaBase> hechizosConocidos = new ArrayList<>();
+    private DefensaBase defensaEquipada = DefensaBase.PIEL_DURA;
     private List<Ente> inventario = new ArrayList<>();
         
  // Almacenamos los valores de los atributos de forma dinámica
@@ -243,11 +249,16 @@ public final class Ente {
      * @param delta El tiempo que ha pasado desde la última actualización.
      */
     public void actualizar(double delta) {
-        // Aquí podemos implementar regeneración pasiva, efectos de veneno, etc.
+    	int recuperacion = (int) (obtenerValorAtributo(Atributo.CONSTITUCION) * 0.1f);
+        int resActual = obtenerValorAtributo(Atributo.RESISTENCIA);
+    	// Aquí podemos implementar regeneración pasiva, efectos de veneno, etc.
         
         // Ejemplo: Recuperar 1 punto de VIDA cada 60 segundos si está descansando
         if (obtenerValorAtributo(Atributo.VIDA) < 100) {
             // Lógica de recuperación basada en delta
+        }
+        if (resActual < 100) { // Supongamos que 100 es el máximo
+            establecerValorAtributo(Atributo.RESISTENCIA, resActual + recuperacion);
         }
     }
     

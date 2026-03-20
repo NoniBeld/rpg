@@ -12,5 +12,8 @@ public enum Atributo {
     SABIDURIA, 
     CARISMA, 
     SUERTE, 
-    CRITICO 
+    CRITICO, 
+    RESISTENCIA,
+    ESPIRITU, 
+    CONSTITUCION
 }

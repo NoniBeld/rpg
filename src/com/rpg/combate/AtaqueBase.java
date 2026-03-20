@@ -1,4 +1,4 @@
-package com.rpg.ente;
+package com.rpg.combate;
 
 import com.rpg.ente.Atributo;
 

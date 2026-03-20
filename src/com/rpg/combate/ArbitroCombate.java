@@ -1,7 +1,6 @@
 package com.rpg.combate;
 
 import com.rpg.ente.Ente;
-import com.rpg.ente.AtaqueBase;
 import com.rpg.ente.Atributo;
 import herramientas.texto.Narrador;
 import java.util.Random;

@@ -1,6 +1,7 @@
 package debug;
 
 import com.rpg.combate.ArbitroCombate;
+import com.rpg.combate.AtaqueBase;
 import com.rpg.ente.*;
 import com.rpg.teatro.Escena;
 
