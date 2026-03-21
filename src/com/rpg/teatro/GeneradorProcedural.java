@@ -1,75 +1,68 @@
 package com.rpg.teatro;
 
-import com.rpg.ente.Creador;
-import com.rpg.ente.Ente;
-import com.rpg.ente.bestiario.PlantillaOrganica;
-import herramientas.clima.Bioma;
-import herramientas.clima.Clima;
+import com.rpg.ente.*;
+import com.rpg.ente.bestiario.*;
+import com.rpg.ente.bestiario.fauna.Humano;
+import com.rpg.ente.bestiario.fauna.Orco;
+import com.rpg.ente.bestiario.fauna.Slime;
+
+import herramientas.clima.*;
 import herramientas.tiempo.CalendarioLunar;
 import java.util.Random;
 
 public class GeneradorProcedural {
-    private static long SEMILLA_MUNDO = 123456789L; 
+    private static long SEMILLA_MUNDO = 123456789L;
 
     public static Escena generarEscena(int x, int y, int z, CalendarioLunar calActual) {
-        // 1. Inicializamos el azar local con la semilla combinada con las coordenadas
-        // Esto hace que cada punto del universo sea único pero constante
         long semillaLocal = SEMILLA_MUNDO ^ ((long)x << 32) ^ y ^ ((long)z << 16);
         Random azarLocal = new Random(semillaLocal);
         
-        // 2. Lógica de selección de Bioma según coordenadas
+        // --- PASO 1: Determinar el Bioma primero ---
         Bioma biomaActual;
-        
         if (z < -20) {
-            biomaActual = Bioma.CUEVA_PROFUNDA; // El inframundo gélido
+            biomaActual = Bioma.CUEVA_PROFUNDA;
         } else if (z > 20) {
-            biomaActual = Bioma.VOLCAN; // Las tierras altas de ceniza
+            biomaActual = Bioma.VOLCAN;
         } else {
-            // En la superficie (z entre -20 y 20), variamos según la distancia al origen (X, Y)
-            float distanciaAlCentro = (float) Math.sqrt(x*x + y*y);
-            
-            if (distanciaAlCentro > 100) {
-                biomaActual = Bioma.DESIERTO; // Lejos del centro todo se seca
-            } else if (distanciaAlCentro > 50) {
-                biomaActual = Bioma.TUNDRA;   // El cinturón helado
-            } else if (azarLocal.nextFloat() < 0.3f) {
-                biomaActual = Bioma.SELVA;    // Manchas de selva tropical
-            } else {
-                biomaActual = Bioma.BOSQUE;   // El bioma base
-            }
+            float distancia = (float) Math.sqrt(x*x + y*y);
+            if (distancia > 100) biomaActual = Bioma.DESIERTO;
+            else if (distancia > 50) biomaActual = Bioma.TUNDRA;
+            else if (azarLocal.nextFloat() < 0.3f) biomaActual = Bioma.SELVA;
+            else biomaActual = Bioma.BOSQUE;
         }
 
-        // 3. Crear el Clima basado en el Bioma
-        Clima climaLocal = new Clima(
-            biomaActual.obtenerNombre(), 
-            biomaActual.obtenerTemperaturaBase(), 
-            biomaActual.obtenerHumedadBase()
-        );
+        // --- PASO 2: Crear Clima y Escena ---
+        Clima climaLocal = new Clima(biomaActual.obtenerNombre(), biomaActual.obtenerTemperaturaBase(), biomaActual.obtenerHumedadBase());
+        String desc = String.format("Estás en el %s. %s", biomaActual.obtenerNombre(), interpretarEntorno(biomaActual, azarLocal));
+        
+        Escena nueva = new Escena("Sector [" + x + "," + y + "," + z + "]", desc, calActual, climaLocal, biomaActual);
 
-        // 4. Descripción dinámica mejorada
-        String desc = String.format("Estás en el %s. %s", 
-            biomaActual.obtenerNombre(), 
-            interpretarEntorno(biomaActual, azarLocal));
-
-        // 5. Instanciar Escena
-        Escena nueva = new Escena(
-            "Sector [" + x + "," + y + "," + z + "]", 
-            desc, calActual, climaLocal, biomaActual
-        );
-
-        // 6. Población Procedural (Aparecen según la semilla local)
-        if (azarLocal.nextFloat() < 0.25f) {
-            // Aquí el sistema decidiría qué bicho poner según el bioma
-            // Ejemplo: if(biomaActual == Bioma.VOLCAN) Creador... crear Slime de Fuego
+        // --- PASO 3: Población (Ahora que 'nueva' existe y 'biomaActual' no es null) ---
+        if (azarLocal.nextFloat() < 0.30f) { 
+            Creador c = Creador.obtenerInstancia(); // Obtenemos la fábrica
+            
+            switch (biomaActual) {
+            case BOSQUE -> {
+                nueva.agregarEnte(c.instanciarDesdePlantilla(Humano.Adan));
+                nueva.agregarEnte(c.instanciarDesdePlantilla(Slime.SLIME_FRESA));
+            }
+                case CUEVA_PROFUNDA -> {
+                    nueva.agregarEnte(c.instanciarDesdePlantilla(Orco.Og));
+                    nueva.agregarEnte(c.instanciarDesdePlantilla(Slime.MICRO_BASURERO));
+                }
+                case SELVA -> {
+                    nueva.agregarEnte(c.instanciarDesdePlantilla(Slime.SLIME_LIMON));
+                }
+            }
         }
 
         return nueva;
     }
 
     private static String interpretarEntorno(Bioma b, Random r) {
-        if (b.obtenerTemperaturaBase() > 40) return "El aire quema tus pulmones y el suelo vibra.";
-        if (b.obtenerHumedadBase() > 80) return "La humedad es tan densa que el agua se condensa en tu piel.";
-        if (b.obtenerTemperaturaBase() < 0) return "Tus pasos crujen sobre una capa de escarcha eterna.";
-        return "El ambiente es tranquilo, pero te sientes observado.";
+        if (b.obtenerTemperaturaBase() > 40) return "El aire quema tus pulmones.";
+        if (b.obtenerHumedadBase() > 80) return "La humedad es asfixiante.";
+        if (b.obtenerTemperaturaBase() < 0) return "El frío cala hasta los huesos.";
+        return "El ambiente es tranquilo.";
     }
 }

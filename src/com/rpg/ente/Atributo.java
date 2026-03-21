@@ -15,5 +15,7 @@ public enum Atributo {
     CRITICO, 
     RESISTENCIA,
     ESPIRITU, 
-    CONSTITUCION, VIDA_MAX
+    CONSTITUCION, 
+    VIDA_MAX,
+    MAGIA
 }

@@ -526,6 +526,7 @@ public final class Ente {
     public int obtenerVidaActual() { return puntosDeVidaActuales; }
     public Funcion obtenerFuncionActual() { return funcionActual; }
     
+    
     /**
      * Convierte el Ente complejo en una línea de datos pura (String).
      * Esto es Serialización Selectiva.

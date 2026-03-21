@@ -14,6 +14,8 @@ import java.util.Random;
  */
 public final class ArbitroCombate {
     private static final Random azar = new Random();
+	private static Ente atacante;
+	private static Ente defensor;
 
     public static void procesarDuelo(Ente atacante, Ente defensor, AtaqueBase ataque) {
         Narrador n = Narrador.obtenerInstancia();
@@ -88,6 +90,11 @@ public final class ArbitroCombate {
     }
     public static void procesarAtaqueDirigido(Ente atk, Ente def, AtaqueBase habilidad, ParteDelCuerpo parte) {
         // 1. Cálculo de Acierto
+    	int des = atacante.obtenerValorAtributo(Atributo.DESTREZA);
+        int agi = defensor.obtenerValorAtributo(Atributo.AGILIDAD);
+        int suerte = atacante.obtenerValorAtributo(Atributo.SUERTE);
+        
+        
         float azarAcierto = new java.util.Random().nextFloat(); // 0.0 a 1.0
         float punteria = (atk.obtenerValorAtributo(Atributo.AGILIDAD) / 100.0f) + parte.probabilidadBase;
 
