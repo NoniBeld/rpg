@@ -11,7 +11,7 @@ public class Navegador {
     private int x = 0, y = 0, z = 0;
     private Escena escenaActual;
 
-    public void viajar(String direccion, Ente jugador, CalendarioLunar calendario) {
+    public Escena viajar(String direccion, Ente jugador, CalendarioLunar calendario) {
         // 1. Antes de irnos, guardamos el estado de la escena actual (si existe)
         if (escenaActual != null) {
             GestorMapa.dormirEscena(escenaActual);
@@ -36,9 +36,9 @@ public class Navegador {
 
         // 4. Colocamos al jugador en la escena y la ejecutamos
         this.escenaActual.agregarEnte(jugador);
-        this.escenaActual.jugar();
+		return escenaActual;
+       
     }
-
     private void actualizarCoordenadas(String dir) {
         switch (dir.toLowerCase()) {
             case "norte" -> y++;

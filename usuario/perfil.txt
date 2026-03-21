@@ -1,1 +1,6 @@
-Noni
+Nombre: Slime_Jugador
+Raza: Slime_Mora
+HP: 150
+Hambre: 20
+PosX: 0.0 | PosY: 100.0 | PosZ: 0.0
+Alineamiento: NEUTRAL_CAOTICO

@@ -19,11 +19,14 @@ import herramientas.texto.Narrador;
  * Utilizamos una clase final para evitar jerarquías de herencia innecesarias (Composición).
  */
 public final class Ente {
-    private final int identificadorUnico;
+    private static final EjeMoral ejeMoral = null;
+	private static final EjeEtico ejeEtico = null;
+	private final int identificadorUnico;
     private String nombre;
     private Funcion funcionActual;
     private Potencia potenciaActual = Potencia.INTEGRO;
     private Tamaño tamañoActual = Tamaño.MEDIO;
+    private EstadoVital estadoVital = EstadoVital.VIVO;
     
     private int puntosDeVidaActuales;
     private int puntosDeVidaMaximos;
@@ -44,6 +47,10 @@ public final class Ente {
     // En el futuro, estos podrían ser objetos "Componente"
     private float posicionX, posicionY, posicionZ;
 	private float tiempoVidaRestante;
+	private TipoDeSer tipoDeSer;
+	private EjeEtico etica = EjeEtico.NEUTRAL;
+	private EjeMoral moral = EjeMoral.NEUTRAL;
+	private int hambre = 0; // 0 (Saciado) a 100 (Inanición)
     
     public Ente(int identificadorUnico, String nombre, Funcion funcionInicial) {
         this.identificadorUnico = identificadorUnico;
@@ -546,5 +553,89 @@ public final class Ente {
         return sb.toString();
     }
 
+    public void establecerTipoDeSer(TipoDeSer ser) {
+        this.tipoDeSer = ser;
+        // Opcional: El Narrador puede avisar del cambio de naturaleza
+        // Narrador.obtenerInstancia().narrar(this.nombre + " ahora es de tipo " + ser, 20);
+    }
 
+    public EstadoVital obtenerEstadoVital() {
+        return this.estadoVital; // Devolvemos la variable, NO llamamos a un método.
+    }
+
+	
+
+	public double obtenerAlcance() {
+	    // Lógica de congruencia: Un Ente COLOSAL llega más lejos que uno MEDIO
+	    return switch (this.tamañoActual) {
+	        case MICROSCOPICO -> 0.01;
+	        case PEQUEÑO -> 0.5;
+	        case MEDIO -> 1.5;   // Rango estándar de una espada/brazo
+	        case GRANDE -> 3.0;
+	        case COLOSAL -> 10.0;
+	        default -> 1.0;
+	    };
+	}
+	public double obtenerPosicionX() { return this.posicionX; }
+	public double obtenerPosicionY() { return this.posicionY; }
+	public double obtenerPosicionZ() { return this.posicionZ; }
+
+	public void avanzarHacia(double destinoX, double destinoY, double destinoZ) {
+	    // 1. Calculamos el vector de dirección
+	    double dirX = destinoX - this.posicionX;
+	    double dirY = destinoY - this.posicionY;
+	    double dirZ = destinoZ - this.posicionZ;
+
+	    // 2. Calculamos la distancia total para normalizar el vector
+	    double distancia = Math.sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
+
+	    if (distancia > 0) {
+	        // 3. Velocidad: Usamos la AGILIDAD para determinar qué tan rápido camina
+	        // Por ejemplo: Agilidad / 10 = unidades por turno
+	        double velocidad = this.obtenerValorAtributo(Atributo.AGILIDAD) / 10.0;
+	        
+	        // Si la velocidad es mayor que la distancia, llegamos al destino
+	        double paso = Math.min(velocidad, distancia);
+
+	        this.posicionX += (dirX / distancia) * paso;
+	        this.posicionY += (dirY / distancia) * paso;
+	        this.posicionZ += (dirZ / distancia) * paso;
+	        
+	        System.out.println(String.format("[%s] se mueve a (%.2f, %.2f, %.2f)", 
+                    this.nombre, this.posicionX, this.posicionY, this.posicionZ));
+	    }
+	}
+	public void decidirAccion(Escena escena) {
+    if (this.obtenerEstadoVital() != EstadoVital.VIVO) return;
+
+    // 1. Prioridad: Hambre. Si tengo mucha hambre, busco al más débil para comer.
+    if (this.hambre > 80) {
+        Ente presa = escena.buscarObjetivoCercano(this);
+        this.avanzarHacia(presa.obtenerPosicionX(), presa.obtenerPosicionY(), presa.obtenerPosicionZ());
+        return;
+    }
+
+    // 2. Comportamiento por Alineamiento
+    if (this.etica == EjeEtico.CAOTICO && this.moral == EjeMoral.MALO) {
+        // El Caótico Malo ataca al que tenga menos vida en la escena
+        Ente victima = escena.obtenerMasDebil(); 
+        if (victima != null && victima != this) {
+            this.avanzarHacia(victima.obtenerPosicionX(), victima.obtenerPosicionY(), victima.obtenerPosicionZ());
+        }
+    }
 }
+	
+	// Métodos para la IA
+	public void establecerAlineamiento(EjeEtico e, EjeMoral m) {
+	    this.etica = e;
+	    this.moral = m;
+	}
+
+	public EjeMoral obtenerMoral() { return this.moral; }
+	public EjeEtico obtenerEtica() { return this.etica; }
+
+	
+	}
+
+
+

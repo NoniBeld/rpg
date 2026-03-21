@@ -52,12 +52,18 @@ public final class Creador {
         nuevo.establecerValorAtributo(Atributo.CONSTITUCION, p.constitucion());
         nuevo.establecerValorAtributo(Atributo.VIDA_MAX, p.vida_max());
         nuevo.establecerValorAtributo(Atributo.MAGIA, p.magia());
-        
-
         nuevo.cambiarTamaño(p.escala());
         
         // 3. ¡Listo! No importa si es Orco, Humano o Slime.
         return nuevo;
     }
-
+    public void imprimirFichaTecnica(Ente e) {
+        System.out.println("\n===== FICHA GENÉTICA: " + e.obtenerNombre() + " =====");
+        System.out.println("Fuerza: " + e.obtenerValorAtributo(Atributo.FUERZA) + 
+                           " | Agilidad: " + e.obtenerValorAtributo(Atributo.AGILIDAD) + 
+                           " | Suerte: " + e.obtenerValorAtributo(Atributo.SUERTE));
+        System.out.println("Constitución: " + e.obtenerValorAtributo(Atributo.CONSTITUCION) + 
+                           " | Vida Max: " + e.obtenerVidaMax());
+        System.out.println("============================================\n");
+    }
 }

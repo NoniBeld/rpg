@@ -88,34 +88,45 @@ public final class ArbitroCombate {
 
         Narrador.obtenerInstancia().narrar("Estado del cuerpo: " + resultado, 20);
     }
-    public static void procesarAtaqueDirigido(Ente atk, Ente def, AtaqueBase habilidad, ParteDelCuerpo parte) {
-        // 1. Cálculo de Acierto
-    	int des = atacante.obtenerValorAtributo(Atributo.DESTREZA);
-        int agi = defensor.obtenerValorAtributo(Atributo.AGILIDAD);
-        int suerte = atacante.obtenerValorAtributo(Atributo.SUERTE);
-        
-        
-        float azarAcierto = new java.util.Random().nextFloat(); // 0.0 a 1.0
-        float punteria = (atk.obtenerValorAtributo(Atributo.AGILIDAD) / 100.0f) + parte.probabilidadBase;
+public static void procesarAtaqueDirigido(Ente atk, Ente def, AtaqueBase habilidad, ParteDelCuerpo parte) {
+    // 1. Cálculo de Acierto (Usando los parámetros atk y def, NO las variables estáticas)
+    int desAtacante = atk.obtenerValorAtributo(Atributo.DESTREZA);
+    int agiDefensor = def.obtenerValorAtributo(Atributo.AGILIDAD);
+    int suerteAtacante = atk.obtenerValorAtributo(Atributo.SUERTE);
+    int vidaAnterior = def.obtenerVidaActual();
+    // Fórmula de precisión: (Destreza / Agilidad) modificada por la probabilidad de la zona
+    float factorPrecision = (float) desAtacante / (agiDefensor > 0 ? agiDefensor : 1);
+    float punteriaFinal = parte.probabilidadBase * factorPrecision;
 
-        if (azarAcierto > punteria) {
-            Narrador.obtenerInstancia().narrar("¡Fallaste! El ataque a " + parte + " fue demasiado ambicioso.", 20);
-            return;
-        }
+    float azarAcierto = azar.nextFloat(); // 0.0 a 1.0
 
-        // 2. Cálculo de Daño con Multiplicador de Anatomía
-        int dañoFinal = (int) (atk.obtenerValorAtributo(habilidad.escala()) * habilidad.multiplicador() * parte.multiplicadorDaño);
-        
-        // 3. Verificación de ONE-SHOT (Si el daño supera la vida actual de un solo golpe en punto vital)
-        if (dañoFinal >= def.obtenerVidaActual() && (parte == ParteDelCuerpo.OJO || parte == ParteDelCuerpo.CABEZA)) {
-            Narrador.obtenerInstancia().narrar("¡EJECUCIÓN PERFECTA! Un solo golpe al " + parte + " terminó el duelo.", 10);
-            def.morir(Integridad.INTACTO); // El cuerpo queda perfecto para loot
-        } else {
-            def.recibirImpacto(dañoFinal);
-            if (def.obtenerVidaActual() <= 0) def.morir(Integridad.MAGULLADO);
-        }
+    // Si la suerte es muy alta, el atacante tiene una segunda oportunidad de acertar
+    if (azarAcierto > punteriaFinal && azar.nextInt(100) > suerteAtacante) {
+        Narrador.obtenerInstancia().narrar("¡Fallaste! El ataque a " + parte + " fue esquivado por " + def.obtenerNombre(), 20);
+        return;
     }
+
+    // 2. Cálculo de Daño con Multiplicador de Anatomía
+    // Escalamos con el atributo de la habilidad (Fuerza, Magia, etc.)
+    int dañoFinal = (int) (atk.obtenerValorAtributo(habilidad.escala()) * habilidad.multiplicador() * parte.multiplicadorDaño);
     
+    // 3. Aplicación de Crítico aleatorio
+    if (azar.nextInt(100) < suerteAtacante) {
+        dañoFinal *= 2;
+        Narrador.obtenerInstancia().narrar("¡GOLPE CRÍTICO en el " + parte + "!", 10);
+    }
+
+    // 4. Aplicación del Daño
+    Narrador.obtenerInstancia().narrar(atk.obtenerNombre() + " golpea el " + parte + " de " + def.obtenerNombre() + " por " + dañoFinal + " de daño.", 30);
+    
+    if (dañoFinal >= def.obtenerVidaActual() && (parte == ParteDelCuerpo.OJO || parte == ParteDelCuerpo.CABEZA || parte == ParteDelCuerpo.NUCLEO)) {
+        Narrador.obtenerInstancia().narrar("¡EJECUCIÓN PERFECTA! El impacto destruyó un centro vital.", 10);
+        def.morir(Integridad.INTACTO); 
+    } else {
+        def.recibirImpacto(dañoFinal);
+        if (def.obtenerVidaActual() <= 0) def.morir(Integridad.MAGULLADO);
+    }
+}
     public void reportarEstadoEquipo(Grupo equipo) {
         for (Ente integrante : equipo.integrantes()) {
             if (integrante.obtenerVidaActual() < 20) {

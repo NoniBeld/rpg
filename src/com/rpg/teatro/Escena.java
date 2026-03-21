@@ -1,93 +1,152 @@
 package com.rpg.teatro;
 
+import com.rpg.combate.ArbitroCombate;
+import com.rpg.combate.AtaqueBase;
+import com.rpg.ente.Atributo;
 import com.rpg.ente.Ente;
+import com.rpg.ente.EstadoVital;
+import com.rpg.ente.ParteDelCuerpo;
 import com.rpg.ente.Tamaño;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import herramientas.clima.Bioma;
 import herramientas.clima.Clima;
 import herramientas.texto.Narrador;
 import herramientas.tiempo.CalendarioLunar;
 
-public final class Escena {
-	private String nombre;
-	private Bioma bioma;
-    private String descripcion;
-    private List<Ente> presentes = new ArrayList<>();
+import java.util.ArrayList;
+import java.util.List;
 
+public final class Escena {
+    private String nombre;
+    private Bioma bioma;
+    private String descripcion;
+    private List<Ente> presentes;
     private CalendarioLunar calendario;
     private Clima clima;
-    
-    
+
     public Escena(String nombre, String descripcion, CalendarioLunar calendario, Clima clima, Bioma bioma) {
-    	this.nombre = nombre;
+        this.nombre = nombre;
         this.descripcion = descripcion;
         this.calendario = calendario;
         this.clima = clima;
         this.bioma = bioma;
         this.presentes = new ArrayList<>();
     }
-    
 
- // 3. Gestión de Entes (Vital para el Generador Procedural)
     public void agregarEnte(Ente ente) {
         if (!presentes.contains(ente)) {
             presentes.add(ente);
         }
     }
 
-    
-    public Bioma obtenerBioma() {
-        return this.bioma;
+    // --- LÓGICA MATEMÁTICA Y DE BÚSQUEDA ---
+
+    /**
+     * Calcula la distancia real entre dos puntos en el espacio XYZ.
+     */
+    private double calcularDistancia(Ente a, Ente b) {
+        if (a == null || b == null) return Double.MAX_VALUE;
+        return Math.sqrt(
+            Math.pow(b.obtenerPosicionX() - a.obtenerPosicionX(), 2) +
+            Math.pow(b.obtenerPosicionY() - a.obtenerPosicionY(), 2) +
+            Math.pow(b.obtenerPosicionZ() - a.obtenerPosicionZ(), 2)
+        );
     }
 
+    /**
+     * Encuentra al Ente VIVO más cercano al actuante que no sea él mismo.
+     */
+    public Ente buscarObjetivoCercano(Ente actuante) {
+        Ente masCercano = null;
+        double distanciaMinima = Double.MAX_VALUE;
 
-    public void jugar() {
-        Narrador.obtenerInstancia().narrar("\n--- NUEVA ESCENA ---", 20);
-        Narrador.obtenerInstancia().narrar(descripcion, 50);
+        for (Ente posibleObjetivo : presentes) {
+            if (posibleObjetivo == actuante) continue;
+            if (posibleObjetivo.obtenerEstadoVital() != EstadoVital.VIVO) continue;
+
+            double dist = calcularDistancia(actuante, posibleObjetivo);
+            if (dist < distanciaMinima) {
+                distanciaMinima = dist;
+                masCercano = posibleObjetivo;
+            }
+        }
+        return masCercano;
+    }
+
+    /**
+     * Verifica si quedan al menos dos entes vivos de diferentes naturalezas
+     * para continuar la batalla.
+     */
+    private boolean verificarSupervivenciaFacciones() {
+        int vivos = 0;
+        for (Ente e : presentes) {
+            if (e.obtenerEstadoVital() == EstadoVital.VIVO) vivos++;
+        }
+        return vivos > 1;
+    }
+
+    // --- CICLOS DE JUEGO ---
+
+    public void simularCiclo() {
+    	
+    	// 1. IMPRIMIR RADAR DE ESTADO
+        System.out.println("\n--- ESTADO ACTUAL DEL CAMPO ---");
+        for (Ente e : presentes) {
+            String estado = (e.obtenerVidaActual() > 0) ? "VIVO" : "CAÍDO";
+            System.out.println(String.format("[%s] HP: %d/%d | Pos: (%.1f, %.1f) | Estado: %s", 
+                e.obtenerNombre(), e.obtenerVidaActual(), e.obtenerVidaMax(), 
+                e.obtenerPosicionX(), e.obtenerPosicionZ(), estado));
+        }
+        System.out.println("-------------------------------\n");
+
+        // 2. ORDENAR Y FILTRAR (Solo los vivos actúan)
+        presentes.sort((a, b) -> Integer.compare(
+            b.obtenerValorAtributo(Atributo.AGILIDAD), 
+            a.obtenerValorAtributo(Atributo.AGILIDAD)
+        ));
+        
+        for (Ente actuante : presentes) {
+        	if (actuante.obtenerVidaActual() <= 0) continue;
+
+            Ente objetivo = buscarObjetivoCercano(actuante);
+            
+            // REGLA 2: No se ataca a lo que ya no tiene vida
+            if (objetivo == null || objetivo.obtenerVidaActual() <= 0) continue;
+            double distancia = calcularDistancia(actuante, objetivo);
+
+            // Umbral de ataque (1.5 unidades de distancia para cuerpo a cuerpo)
+            if (distancia <= 1.5) {
+                AtaqueBase habilidad = (actuante.obtenerValorAtributo(Atributo.MAGIA) > 20) 
+                                       ? AtaqueBase.EXPLOSION_ARCANA : AtaqueBase.EMBESTIDA;
+                
+                ParteDelCuerpo zona = (actuante.obtenerValorAtributo(Atributo.INTELIGENCIA) > 15)
+                                      ? ParteDelCuerpo.NUCLEO : ParteDelCuerpo.TORSO;
+
+                ArbitroCombate.procesarAtaqueDirigido(actuante, objetivo, habilidad, zona);
+            } else {
+                // Movimiento congruente hacia el objetivo
+                actuante.avanzarHacia(objetivo.obtenerPosicionX(), objetivo.obtenerPosicionY(), objetivo.obtenerPosicionZ());
+                Narrador.obtenerInstancia().narrar(actuante.obtenerNombre() + " avanza hacia " + objetivo.obtenerNombre() + " [Dist: " + String.format("%.2f", distancia) + "]", 10);
+            }
+        }
+    }
+
+    public void ejecutarBatallaReal() {
         Narrador n = Narrador.obtenerInstancia();
-        
-        n.narrar("[ Tiempo: " + calendario.obtenerFechaFormateada() + " ]", 10);
-        n.narrar("[ Clima: " + clima.nombre() + " | " + clima.temperaturaAmbiente() + "°C ]", 10);
-        n.narrar("------------------------------------------------", 10);
-        
-        // 2. Descripción Atmosférica
-        n.narrar(descripcion, 40);
-        
-        for (Ente e : presentes) {
-            Narrador.obtenerInstancia().narrar("Ves un " + e.obtenerNombre() + " (" + e.obtenerFuncionActual() + ")", 30);
-            e.sentirClima(clima);
+        int ciclo = 1;
+        while (verificarSupervivenciaFacciones() && ciclo <= 50) {
+            n.narrar("\n--- CICLO ESPACIAL " + ciclo + " ---", 10);
+            simularCiclo();
+            ciclo++;
         }
-    }
-    
-    public void actualizarEntidades(double delta) {
-        for (Ente e : presentes) {
-            e.actualizar(delta); // Este es el método que ya definimos en Ente
-        }
-    }
- // En Escena.java
-    public String obtenerDescripcion(Ente observador) {
-        Tamaño escala = observador.obtenerTamaño();
-        
-        return switch (escala) {
-            case MEDIO -> "Ves un lago tranquilo con una pared de piedra al fondo.";
-            case COLOSAL -> "Ves un pequeño charco acumulado en una grieta de tu jardín.";
-            case MINUSCULO -> "Estás frente a una muralla de metal ciclópea que retiene un océano infinito.";
-            default -> "Un paisaje cuya escala te resulta incomprensible.";
-        };
-    }
-    public List<Ente> obtenerPresentes() {
-        // Si por alguna razón es null, devolvemos una lista vacía para evitar que el motor explote
-        if (this.presentes == null) {
-            this.presentes = new ArrayList<>();
-        }
-        return this.presentes;
+        n.narrar("\n=== SIMULACIÓN FINALIZADA ===", 20);
     }
 
-	public String obtenerNombre() {		
-		
-		return this.nombre;
+    // --- GETTERS Y OTROS ---
+    public String obtenerNombre() { return this.nombre; }
+    public List<Ente> obtenerPresentes() { return this.presentes; }
+
+	public Ente obtenerMasDebil() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
