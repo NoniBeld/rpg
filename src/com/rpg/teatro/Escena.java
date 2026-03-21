@@ -6,12 +6,14 @@ import com.rpg.ente.Tamaño;
 import java.util.ArrayList;
 import java.util.List;
 
+import herramientas.clima.Bioma;
 import herramientas.clima.Clima;
 import herramientas.texto.Narrador;
 import herramientas.tiempo.CalendarioLunar;
 
 public final class Escena {
 	private String nombre;
+	private Bioma bioma;
     private String descripcion;
     private List<Ente> presentes = new ArrayList<>();
 
@@ -19,18 +21,28 @@ public final class Escena {
     private Clima clima;
     
     
-    public Escena(String nombre, String descripcion, CalendarioLunar calendario, Clima clima) {
+    public Escena(String nombre, String descripcion, CalendarioLunar calendario, Clima clima, Bioma bioma) {
     	this.nombre = nombre;
         this.descripcion = descripcion;
         this.calendario = calendario;
         this.clima = clima;
+        this.bioma = bioma;
         this.presentes = new ArrayList<>();
     }
     
-    public void agregarEnte(Ente ente ) {
-        this.presentes.add(ente);
-        
+
+ // 3. Gestión de Entes (Vital para el Generador Procedural)
+    public void agregarEnte(Ente ente) {
+        if (!presentes.contains(ente)) {
+            presentes.add(ente);
+        }
     }
+
+    
+    public Bioma obtenerBioma() {
+        return this.bioma;
+    }
+
 
     public void jugar() {
         Narrador.obtenerInstancia().narrar("\n--- NUEVA ESCENA ---", 20);
@@ -73,4 +85,9 @@ public final class Escena {
         }
         return this.presentes;
     }
+
+	public String obtenerNombre() {		
+		
+		return this.nombre;
+	}
 }

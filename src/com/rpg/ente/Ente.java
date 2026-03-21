@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import com.rpg.combate.AtaqueBase;
 import com.rpg.combate.DefensaBase;
 import com.rpg.combate.MagiaBase;
+import com.rpg.teatro.Escena;
 
 import herramientas.clima.Clima;
 import herramientas.texto.Narrador;
@@ -290,6 +291,27 @@ public final class Ente {
     }
     
     /**
+     * Traduce datos invisibles (entropía, tamaño, clima) en mensajes para el Narrador.
+     */
+    public void percibirEntorno(Escena escenaActual) {
+        Narrador n = Narrador.obtenerInstancia();
+        
+        for (Ente cercano : escenaActual.obtenerPresentes()) {
+            if (cercano == this) continue;
+
+            float distancia = this.calcularDistancia(cercano);
+            
+            // Lógica de sentidos según TAMAÑO y DISTANCIA
+            if (this.tamañoActual == Tamaño.MEDIO && cercano.obtenerTamaño() == Tamaño.MICROSCOPICO) {
+                if (distancia < 1.0f) n.narrar("[OLFATO]: Un olor acre a descomposición flota en el aire...", 50);
+            }
+            
+            if (cercano.obtenerVidaActual() < 0) {
+                n.narrar("[VISTA]: Ves un aura oscura emanando de los restos de " + cercano.obtenerNombre(), 40);
+            }
+        }
+    }
+    /**
      * Actualiza el estado del ente basándose en el tiempo transcurrido.
      * @param delta El tiempo que ha pasado desde la última actualización.
      */
@@ -483,6 +505,25 @@ public final class Ente {
     public String obtenerNombre() { return nombre;  	}
     public int obtenerVidaActual() { return puntosDeVidaActuales; }
     public Funcion obtenerFuncionActual() { return funcionActual; }
+    
+    /**
+     * Convierte el Ente complejo en una línea de datos pura (String).
+     * Esto es Serialización Selectiva.
+     */
+    public String compactar() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ID:").append(identificadorUnico).append("|");
+        sb.append("N:").append(nombre).append("|");
+        sb.append("F:").append(funcionActual).append("|");
+        sb.append("V:").append(puntosDeVidaActuales).append("|");
+        
+        // Solo guardamos anatomía si está dañado (Ahorro de espacio)
+        if (puntosDeVidaActuales < puntosDeVidaMaximos) {
+            sb.append("ANT:").append(integridadFisica.toString());
+        }
+        
+        return sb.toString();
+    }
 
 
 }

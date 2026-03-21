@@ -11,7 +11,9 @@ public enum Bioma {
     DESIERTO("Dunas Infinitas", 45.0f, 0.1f),
     SELVA("Selva Esmeralda", 30.0f, 0.9f),
     TUNDRA("Páramo Helado", -15.0f, 0.3f),
-    VOLCAN("Tierras de Ceniza", 60.0f, 0.05f);
+    VOLCAN("Tierras de Ceniza", 60.0f, 0.05f), 
+    CUEVA_PROFUNDA("Colmena Gelida ", 0.0f, 50.0f), 
+    BOSQUE("Bosque Rojo", 07.0f, 75.0f ) ;
 
     private final String nombre;
     private final float temperaturaPromedio;
@@ -27,4 +29,8 @@ public enum Bioma {
         // Aquí podríamos añadir un factor aleatorio para que no siempre sea igual
         return new Clima(this.nombre, temperaturaPromedio, humedadPromedio);
     }
+
+    public String obtenerNombre() { return nombre; }
+    public float obtenerTemperaturaBase() { return temperaturaPromedio; }
+    public float obtenerHumedadBase() { return humedadPromedio; }
 }

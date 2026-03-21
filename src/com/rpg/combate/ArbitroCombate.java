@@ -108,4 +108,15 @@ public final class ArbitroCombate {
             if (def.obtenerVidaActual() <= 0) def.morir(Integridad.MAGULLADO);
         }
     }
+    
+    public void reportarEstadoEquipo(Grupo equipo) {
+        for (Ente integrante : equipo.integrantes()) {
+            if (integrante.obtenerVidaActual() < 20) {
+                Narrador.obtenerInstancia().narrar(
+                    "[SENTIDO OIDO]: Escuchas la respiración agitada de " + integrante.obtenerNombre(), 
+                    50
+                );
+            }
+        }
+    }
 }
