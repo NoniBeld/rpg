@@ -15,5 +15,7 @@ public record Slime(
     Tamaño escala
 ) {
     public static final Slime SLIME_FRESA = new Slime("Slime Fresa", 50, 5, 12, Tamaño.MEDIO);
+    public static final Slime SLIME_MORA = new Slime("Slime Mora", 30, 10, 18, Tamaño.MEDIO);
+    public static final Slime SLIME_LIMON = new Slime("Slime Limon", 80, 2, 10, Tamaño.MEDIO);
     public static final Slime MICRO_BASURERO = new Slime("Micro-Slime", 1, 1, 50, Tamaño.MICROSCOPICO);
 }

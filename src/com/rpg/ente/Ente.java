@@ -78,6 +78,26 @@ public final class Ente {
             this.integridadFisica.put(parte, parte.saludBase);
         }
     }
+    
+    /**
+     * Calcula la vida máxima basada en la suma de sus partes 
+     * más los bonos de Constitución y Resistencia.
+     */
+    public int calcularVidaMaximaOrganica() {
+        int sumaPartes = 0;
+        for (int saludParte : integridadFisica.values()) {
+            sumaPartes += saludParte;
+        }
+        
+        int bonoGenetico = obtenerValorAtributo(Atributo.CONSTITUCION) * 2;
+        int bonoArmadura = obtenerValorAtributo(Atributo.RESISTENCIA);
+        
+        return sumaPartes + bonoGenetico + bonoArmadura;
+    }
+
+    // Al inicio de un combate o tras sanar, actualizamos:
+    // this.puntosDeVidaMaximos = calcularVidaMaximaOrganica();
+    
     public void recibirImpactoLocalizado(int daño, ParteDelCuerpo zona) {
         int saludZona = integridadFisica.getOrDefault(zona, 0);
         int nuevaSaludZona = Math.max(0, saludZona - daño);
