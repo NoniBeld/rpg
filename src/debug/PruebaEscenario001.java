@@ -22,7 +22,7 @@ import herramientas.texto.Narrador;
 	            "Bosque de los Susurros", 
 	            "Los árboles están cubiertos de escarcha y el silencio es sepulcral.",
 	            calendario,
-	            vernoFrio
+	            vernoFrio, null
 	        );
 
 	        // 4. Poblar la Escena
@@ -33,7 +33,7 @@ import herramientas.texto.Narrador;
 	        bosque.agregarEnte(slimeHielo);
 
 	        // 5. ¡ACCIÓN!
-	        bosque.jugar();
+	        bosque.simularCiclo();
 	        
 	        Narrador.obtenerInstancia().narrar("\n[ Decides actuar ]", 30);
 	        jugador.interactuar(slimeHielo);

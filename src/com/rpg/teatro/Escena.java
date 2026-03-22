@@ -31,7 +31,9 @@ public final class Escena {
         this.bioma = bioma;
         this.presentes = new ArrayList<>();
     }
-
+    public Escena(String nombre, String descripcion, CalendarioLunar calendario, Clima clima) {
+        this(nombre, descripcion, calendario, clima, Bioma.PLANICIE); // Valor por defecto
+    }
     public void agregarEnte(Ente ente) {
         if (!presentes.contains(ente)) {
             presentes.add(ente);
@@ -87,14 +89,20 @@ public final class Escena {
     // --- CICLOS DE JUEGO ---
 
     public void simularCiclo() {
-    	
+    	presentes.removeIf(e -> e.obtenerEstadoVital() == EstadoVital.ELIMINADO);
     	// 1. IMPRIMIR RADAR DE ESTADO
         System.out.println("\n--- ESTADO ACTUAL DEL CAMPO ---");
+        for (Ente e : new ArrayList<>(presentes)) { 
+            if (e.obtenerEstadoVital() == EstadoVital.VIVO) {
+                e.decidirAccion(this); 
+            }
+        }
         for (Ente e : presentes) {
             String estado = (e.obtenerVidaActual() > 0) ? "VIVO" : "CAÍDO";
             System.out.println(String.format("[%s] HP: %d/%d | Pos: (%.1f, %.1f) | Estado: %s", 
                 e.obtenerNombre(), e.obtenerVidaActual(), e.obtenerVidaMax(), 
                 e.obtenerPosicionX(), e.obtenerPosicionZ(), estado));
+            System.out.println("   Salud Torso: " + e.obtenerSaludDeParte(ParteDelCuerpo.TORSO));
         }
         System.out.println("-------------------------------\n");
 
@@ -148,5 +156,9 @@ public final class Escena {
 	public Ente obtenerMasDebil() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	public void removerEnte(Ente objetivo) {
+		// TODO Auto-generated method stub
+		
 	}
 }

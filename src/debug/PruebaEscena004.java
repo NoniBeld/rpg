@@ -4,6 +4,7 @@ import com.rpg.ente.*;
 import com.rpg.ente.bestiario.fauna.Orco;
 import com.rpg.motor.Navegador;
 import com.rpg.teatro.Escena;
+
 import herramientas.guardado.GestorGuardado;
 import herramientas.tiempo.CalendarioLunar;
 
@@ -22,7 +23,7 @@ public class PruebaEscena004 {
         // 3. POBLAR CON ALINEAMIENTOS (Para probar la IA)
         Ente og = Creador.obtenerInstancia().instanciarDesdePlantilla(Orco.Og);
         og.establecerAlineamiento(EjeEtico.CAOTICO, EjeMoral.MALO);
-        og.teletransportar(10, 100, 10); // Lejos, para ver cómo camina
+        og.teletransportar(1, 100, 1); // Lejos, para ver cómo camina
         
         escena.agregarEnte(og);
 

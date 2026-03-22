@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.rpg.combate.ArbitroCombate;
 import com.rpg.combate.AtaqueBase;
 import com.rpg.combate.DefensaBase;
 import com.rpg.combate.MagiaBase;
@@ -37,6 +38,7 @@ public final class Ente {
     private List<MagiaBase> hechizosConocidos = new ArrayList<>();
     private DefensaBase defensaEquipada = DefensaBase.PIEL_DURA;
     private List<Ente> inventario = new ArrayList<>();
+    private Ente armaEquipada = null;
         
  // Almacenamos los valores de los atributos de forma dinámica
     private final Map<Atributo, Integer> estadisticas;
@@ -85,7 +87,17 @@ public final class Ente {
             this.integridadFisica.put(parte, parte.saludBase);
         }
     }
-    
+    public List<Ente> obtenerInventario() {
+        return this.inventario;
+    }
+    public void establecerArmaEquipada(Ente arma) {
+        this.armaEquipada = arma;
+        Narrador.obtenerInstancia().narrar(this.nombre + " empuña su " + arma.obtenerNombre(), 20);
+    }
+
+    public Ente obtenerArmaEquipada() {
+        return this.armaEquipada;
+    }
     /**
      * Calcula la vida máxima basada en la suma de sus partes 
      * más los bonos de Constitución y Resistencia.
@@ -231,8 +243,8 @@ public final class Ente {
         case SUJETO->{
             this.hablar("Saludos, " + objetivo.obtenerNombre() + ". ¿Qué haces en este lugar?");
         }
-        default->
-            this.hablar("Es un " + objetivo.obtenerNombre() + "... no parece hacer nada.");
+        default->{
+            this.hablar("Es un " + objetivo.obtenerNombre() + "... no parece hacer nada.");}
       	}
     }
     
@@ -395,19 +407,28 @@ public final class Ente {
         switch (nuevaPotencia) {
             case DIGERIDO -> {
                 this.nombre = "Excremento de " + this.nombre;
-                this.cambiarFuncion(Funcion.ALIMENTO); // El abono puede ser alimento para plantas
-                this.establecerValorAtributo(Atributo.SUERTE, 1); // ¡Pisar esto da suerte!
+                this.cambiarFuncion(Funcion.ALIMENTO);
+                this.establecerValorAtributo(Atributo.SUERTE, 1);
             }
             case QUEMADO -> {
                 this.nombre = "Cenizas de " + this.nombre;
                 this.cambiarFuncion(Funcion.OBJETO);
             }
-            case SANGRIENTO -> this.nombre = "Restos óseos de " + this.nombre;
-        }
+            case SANGRIENTO -> {
+                this.nombre = "Restos óseos de " + this.nombre;
+            }
+            case HAMBRIENTO -> {
+                this.nombre = "Rugido de estómago de " + this.nombre;
+                this.cambiarFuncion(Funcion.SUJETO);
+                this.establecerValorAtributo(Atributo.AGILIDAD, obtenerValorAtributo(Atributo.AGILIDAD) - 1);
+            }
+            case INTEGRO, OXIDADO, PROCESANDO -> {
+                this.nombre = " " + this.nombre; // O déjalo sin cambios
+            }
+        } // Cierre del switch
         
         Narrador.obtenerInstancia().narrar("La potencia de " + this.nombre + " ahora es: " + nuevaPotencia, 30);
-    }
-    
+    } // Cierre del método
     public void alSerConsumido() {
         if (this.nombre.contains("Semilla")) {
             this.hablar("Espero que la tierra donde caiga sea fértil...");
@@ -444,24 +465,48 @@ public final class Ente {
     
     
 
-    public void ejecutarDeshuesar(Ente cadaver) {
-        for (ParteDelCuerpo parte : ParteDelCuerpo.values()) {
-            int saludRestante = cadaver.obtenerSaludDeParte(parte);
+   public void ejecutarDeshuesar(Ente cadaver) {
+    Narrador narrador = Narrador.obtenerInstancia();
+    narrador.narrar(String.format("=== PROCESANDO RESTOS DE %s ===", cadaver.obtenerNombre().toUpperCase()), 20);
+
+    // 1. FASE DE SAQUEO (Objetos, Armas, etc.)
+    List<Ente> loot = cadaver.obtenerInventario();
+    if (loot != null && !loot.isEmpty()) {
+        System.out.println("[SISTEMA]: " + this.nombre + " registra pertenencias de " + cadaver.obtenerNombre());
+        for (Ente objeto : new ArrayList<>(loot)) {
+            this.inventario.add(objeto);
+            System.out.println("   -> [HALLAZGO]: Reclamado " + objeto.obtenerNombre());
+        }
+        loot.clear(); // El cadáver queda vacío de objetos
+    }
+
+    // 2. FASE DE COSECHA BIOLÓGICA (Partes del cuerpo)
+    System.out.println("[SISTEMA]: Iniciando despiece orgánico...");
+    
+    // Usamos el entrySet para recorrer el mapa una sola vez
+    for (Map.Entry<ParteDelCuerpo, Integer> entrada : cadaver.integridadFisica.entrySet()) {
+        ParteDelCuerpo parte = entrada.getKey();
+        int integridad = entrada.getValue();
+
+        if (integridad > 0) {
+            // Creamos el trofeo orgánico
+            Ente trofeo = Creador.obtenerInstancia().crearNuevoEnte(
+                "Resto de " + parte + " (" + cadaver.obtenerNombre() + ")", 
+                Funcion.ALIMENTO
+            );
             
-            if (saludRestante > 0) {
-                // Si la parte está sana, se extrae como objeto
-                Ente trofeo = Creador.obtenerInstancia().crearNuevoEnte(
-                    "Resto de " + parte + " de " + cadaver.obtenerNombre(), 
-                    Funcion.OBJETO
-                );
-                this.inventario.add(trofeo);
-                System.out.println("Has extraído con éxito: " + trofeo.obtenerNombre());
-            } else {
-                System.out.println("El " + parte + " de " + cadaver.obtenerNombre() + " está demasiado dañado.");
-            }
+            // Guardamos la calidad de la parte en el nuevo ente (opcional)
+            trofeo.establecerValorAtributo(Atributo.RESISTENCIA, integridad);
+            this.inventario.add(trofeo);
+            
+            System.out.println(String.format("   -> [COSECHA]: %s extraído con éxito (Calidad: %d%%)", parte, integridad));
+        } else {
+            System.out.println("   -> [FALLO]: El " + parte + " está demasiado destrozado.");
         }
     }
     
+    narrador.narrar("Procesamiento de " + cadaver.obtenerNombre() + " finalizado.", 10);
+}
     public int obtenerSaludDeParte(ParteDelCuerpo parte) {
         return integridadFisica.getOrDefault(parte, 0);
     }
@@ -560,9 +605,11 @@ public final class Ente {
     }
 
     public EstadoVital obtenerEstadoVital() {
-        return this.estadoVital; // Devolvemos la variable, NO llamamos a un método.
+        if (this.puntosDeVidaActuales <= 0) {
+            return EstadoVital.MUERTO; // Forzamos que si es <= 0, para la IA sea un cadáver
+        }
+        return EstadoVital.VIVO;
     }
-
 	
 
 	public double obtenerAlcance() {
@@ -605,26 +652,54 @@ public final class Ente {
                     this.nombre, this.posicionX, this.posicionY, this.posicionZ));
 	    }
 	}
-	public void decidirAccion(Escena escena) {
+public void decidirAccion(Escena escena) {
+	
+	Ente objetivo = escena.obtenerPresentes().stream()
+	        .filter(e -> e != this && e.obtenerEstadoVital() == EstadoVital.VIVO)
+	        .filter(e -> !e.obtenerNombre().contains(this.nombre.split("_")[0])) // No atacar a mis clones
+	        .min((e1, e2) -> Float.compare(calcularDistancia(e1), calcularDistancia(e2)))
+	        .orElse(null);
     if (this.obtenerEstadoVital() != EstadoVital.VIVO) return;
 
-    // 1. Prioridad: Hambre. Si tengo mucha hambre, busco al más débil para comer.
+    // 1. PRIORIDAD ABSOLUTA: HAMBRE
     if (this.hambre > 80) {
-        Ente presa = escena.buscarObjetivoCercano(this);
-        this.avanzarHacia(presa.obtenerPosicionX(), presa.obtenerPosicionY(), presa.obtenerPosicionZ());
-        return;
+        Ente comida = escena.buscarObjetivoCercano(this);
+        if (comida != null && (comida.obtenerFuncionActual() == Funcion.ALIMENTO || comida.obtenerEstadoVital() != EstadoVital.VIVO)) {
+            ejecutarMovimientoOInteraccion(comida, () -> this.consumir(comida));
+            return;
+        }
     }
 
-    // 2. Comportamiento por Alineamiento
+    // 2. COMPORTAMIENTO POR ALINEAMIENTO (CAÓTICO MALO)
     if (this.etica == EjeEtico.CAOTICO && this.moral == EjeMoral.MALO) {
-        // El Caótico Malo ataca al que tenga menos vida en la escena
-        Ente victima = escena.obtenerMasDebil(); 
-        if (victima != null && victima != this) {
-            this.avanzarHacia(victima.obtenerPosicionX(), victima.obtenerPosicionY(), victima.obtenerPosicionZ());
+      //  Ente objetivo = escena.buscarObjetivoCercano(this);
+        
+        if (objetivo != null) {
+            if (objetivo.obtenerEstadoVital() == EstadoVital.VIVO) {
+                // Si está vivo, pelear
+                ejecutarMovimientoOInteraccion(objetivo, () -> ArbitroCombate.procesarDuelo(this, objetivo, AtaqueBase.EMBESTIDA));
+            } else {
+                // Si está muerto/caído, saquear y deshuesar
+                ejecutarMovimientoOInteraccion(objetivo, () -> {
+                    this.ejecutarDeshuesar(objetivo);
+                    escena.removerEnte(objetivo);
+                });
+            }
         }
     }
 }
-	
+
+/**
+ * Método auxiliar para evitar repetir la lógica de "si estoy cerca hago X, si no avanzo"
+ */
+private void ejecutarMovimientoOInteraccion(Ente objetivo, Runnable accion) {
+    double dist = calcularDistancia(objetivo);
+    if (dist < 1.5) {
+        accion.run();
+    } else {
+        this.avanzarHacia(objetivo.obtenerPosicionX(), objetivo.obtenerPosicionY(), objetivo.obtenerPosicionZ());
+    }
+}
 	// Métodos para la IA
 	public void establecerAlineamiento(EjeEtico e, EjeMoral m) {
 	    this.etica = e;
@@ -634,8 +709,31 @@ public final class Ente {
 	public EjeMoral obtenerMoral() { return this.moral; }
 	public EjeEtico obtenerEtica() { return this.etica; }
 
-	
+	public void inicializarAnatomiaPorChasis(String chasis) {
+	    this.integridadFisica.clear();
+	    
+	    switch (chasis.toUpperCase()) {
+	        case "HUMANOIDE" -> {
+	            // Elfo, Orco, Enano, Humano comparten esto:
+	            for (ParteDelCuerpo p : List.of(ParteDelCuerpo.CABEZA, ParteDelCuerpo.TORSO, 
+	                                            ParteDelCuerpo.BRAZO_IZQ, ParteDelCuerpo.BRAZO_DER, 
+	                                            ParteDelCuerpo.PIERNA_IZQ, ParteDelCuerpo.PIERNA_DER)) {
+	                this.integridadFisica.put(p, p.saludBase);
+	            }
+	        }
+	        case "AMORFO" -> {
+	            // Slimes y Elementales
+	            this.integridadFisica.put(ParteDelCuerpo.NUCLEO, 100);
+	            this.integridadFisica.put(ParteDelCuerpo.CUERPO_GELATINOSO, 200);
+	        }
+	        case "CUADRUPEDO" -> {
+	            // Lobos, caballos, etc.
+	            // (Aquí añadirías Cola, Pata Trasera, etc.)
+	        }
+	    }
 	}
+}
+	
 
 
 

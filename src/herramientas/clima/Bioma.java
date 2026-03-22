@@ -13,7 +13,8 @@ public enum Bioma {
     TUNDRA("Páramo Helado", -15.0f, 0.3f),
     VOLCAN("Tierras de Ceniza", 60.0f, 0.05f), 
     CUEVA_PROFUNDA("Colmena Gelida ", 0.0f, 50.0f), 
-    BOSQUE("Bosque Rojo", 07.0f, 75.0f ) ;
+    BOSQUE("Bosque Rojo", 07.0f, 75.0f ), 
+    PLANICIE("Plancie de Flores",30.0f, 50.0f) ;
 
     private final String nombre;
     private final float temperaturaPromedio;

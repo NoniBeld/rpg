@@ -12,7 +12,13 @@ public enum ParteDelCuerpo {
 	CUERPO(100, 1.0f, 1.0f, 1.0f, 12.5f),    // Fácil de dar, daño normal
 	CABEZA(30, 2.5f, 0.4f, 2.5f, 15.0f),    // Difícil de dar (40% acierto), mucho daño
 	OJO(5, 10.0f, 0.1f, 5.0f, 1.0f),       // Casi imposible (10% acierto), muerte instantánea
-	EXTREMIDAD(50, 0.5f, 0.7f, 0.8f, 16.0f); // Daño reducido, pero afecta movimiento
+	EXTREMIDAD(50, 0.5f, 0.7f, 0.8f, 16.0f), 
+	BRAZO_IZQ (20, 0.5f, 0.7f, 0.8f, 1.5f),
+	PIERNA_IZQ(20, 0.5f, 0.7f, 0.8f, 1.5f), // Daño reducido, pero afecta movimiento
+	PIERNA_DER(20, 0.5f, 0.7f, 0.8f, 1.5f),
+	BRAZO_DER(20, 0.5f, 0.7f, 0.8f, 1.5f), 
+	CUERPO_GELATINOSO(100, 1.0f, 1.0f, 1.0f, 12.5f); 
+
 
 	public final int saludBase;
     public final float multiplicadorDañoAlTotal;

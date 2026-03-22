@@ -8,7 +8,7 @@ import com.rpg.teatro.Escena;
 public class PruebaEscenario000 {
 	public static void main(String[] args) {
         // 1. Crear el Mundo
-        Escena calabozo = new Escena("Te encuentras en una celda húmeda. El olor a musgo es penetrante.", null, null, null);
+        Escena calabozo = new Escena("Te encuentras en una celda húmeda. El olor a musgo es penetrante.", null, null, null, null);
         
         // 2. Crear a los Actores
         Ente jugador = Creador.obtenerInstancia().crearNuevoEnte("Slime de Agua", Funcion.SUJETO);
@@ -20,7 +20,7 @@ public class PruebaEscenario000 {
         calabozo.agregarEnte(daga);
 
         // 3. Ejecutar Narrativa
-        calabozo.jugar();
+        calabozo.ejecutarBatallaReal();;
 
         // 4. Interacciones Dinámicas
         jugador.interactuar(daga);        // Lo recoge

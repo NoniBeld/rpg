@@ -13,19 +13,19 @@ public record Slime(String nombre, int vidaBase, int fuerza, int agilidad, int d
 					int resistencia,  int espiritu, int constitucion,  int vida_max, 
 					int magia, Tamaño escala) 
 implements PlantillaEnte {
-    public static final Slime SLIME_FRESA = new Slime("Slime Fresa", 100, 10, 10, 10, 
+    public static final Slime SLIME_FRESA = new Slime("Slime Fresa", 10, 10, 10, 10, 
 																	10, 10, 10, 10, 10,
 																	20, 10, 30, 200,
 																	10, Tamaño.MEDIO);
-    public static final Slime SLIME_MORA = new Slime("Slime Mora",  100, 20, 20, 20, 
+    public static final Slime SLIME_MORA = new Slime("Slime Mora",  10, 20, 20, 20, 
     																10, 10, 10, 10, 10,
     																10, 10, 10, 200,
     																10, Tamaño.MEDIO);
-    public static final Slime SLIME_LIMON = new Slime("Slime Limon", 110, 10, 10, 10, 
+    public static final Slime SLIME_LIMON = new Slime("Slime Limon", 11, 10, 10, 10, 
     																10, 10, 10, 10, 10,
     																10, 10, 10, 200,
     																30, Tamaño.MEDIO);
-    public static final Slime MICRO_BASURERO = new Slime("Micro-Slime", 110, 10, 10, 10, 
+    public static final Slime MICRO_BASURERO = new Slime("Micro-Slime", 11, 10, 10, 10, 
     																10, 10, 10, 10, 10,
     																10, 10, 10, 220,
     																10, Tamaño.MEDIO);

@@ -13,7 +13,7 @@ public class PruebaEnte006 {
         // 1. Entorno
         CalendarioLunar cal = new CalendarioLunar();
         Clima cuevaTemplada = new Clima("Cueva Húmeda", 18.0f, 0.8f);
-        Escena cueva = new Escena("Cueva Profunda", "Gotea agua del techo.", cal, cuevaTemplada);
+        Escena cueva = new Escena("Cueva Profunda", "Gotea agua del techo.", cal, cuevaTemplada, null);
 
         // 2. Los tres contendientes (Todos son SUJETOS pero también ALIMENTO)
         Ente azul = Creador.obtenerInstancia().crearNuevoEnte("Slime Mora", Funcion.SUJETO);
@@ -30,7 +30,7 @@ public class PruebaEnte006 {
         cueva.agregarEnte(verde);
 
         // 3. Iniciar Simulación
-        cueva.jugar();
+        cueva.ejecutarBatallaReal();
         
         // Simulamos el paso del tiempo donde el azar decide quién tiene hambre primero
         java.util.Random azar = new java.util.Random();

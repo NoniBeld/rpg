@@ -14,8 +14,6 @@ import java.util.Random;
  */
 public final class ArbitroCombate {
     private static final Random azar = new Random();
-	private static Ente atacante;
-	private static Ente defensor;
 
     public static void procesarDuelo(Ente atacante, Ente defensor, AtaqueBase ataque) {
         Narrador n = Narrador.obtenerInstancia();
@@ -53,8 +51,14 @@ public final class ArbitroCombate {
         
         // 7. APLICACIÓN DEL IMPACTO
         // Restamos la vida al defensor
-        defensor.recibirImpacto(dañoFinal);
+       //defensor.recibirImpacto(dañoFinal);
         
+        ParteDelCuerpo zona = calcularZonaImpacto();
+        if (zona != null) {
+            defensor.recibirImpactoLocalizado(dañoFinal, zona);
+        } else {
+        	Narrador.obtenerInstancia().narrar("¡PIFIA! " + atacante.obtenerNombre() + " tropieza y su ataque golpea el aire.", 15);            return;
+        }
         n.narrar(String.format("%s recibe %d de daño. Vida restante: %d", 
             defensor.obtenerNombre(), dañoFinal, defensor.obtenerVidaActual()), 40);
         
@@ -126,6 +130,16 @@ public static void procesarAtaqueDirigido(Ente atk, Ente def, AtaqueBase habilid
         def.recibirImpacto(dañoFinal);
         if (def.obtenerVidaActual() <= 0) def.morir(Integridad.MAGULLADO);
     }
+}
+public static ParteDelCuerpo calcularZonaImpacto() {
+    int dado = new java.util.Random().nextInt(20) + 1; // 1 a 20
+
+    if (dado == 20) return ParteDelCuerpo.NUCLEO;   // ¡Crítico vital!
+    if (dado == 1)  return null;                   // Pifia: Golpe al aire
+    if (dado >= 15) return ParteDelCuerpo.CABEZA;   // Golpe alto
+    if (dado >= 8)  return ParteDelCuerpo.TORSO;    // Zona media (más probable)
+    if (dado >= 5)  return ParteDelCuerpo.BRAZO_DER; // Extremidades
+    return ParteDelCuerpo.PIERNA_IZQ;               // Golpe bajo
 }
     public void reportarEstadoEquipo(Grupo equipo) {
         for (Ente integrante : equipo.integrantes()) {
