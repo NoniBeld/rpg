@@ -12,5 +12,9 @@ implements PlantillaEnte{
 														40, 20, 20, 10,10,
 														10, 50, 10, 150,
 														20, Tamaño.MEDIO);
+    public static final Humano Eva = new Humano("Eva", 80, 10, 10, 10, 
+    													40, 20, 20, 10,10,
+    													10, 50, 10, 150,
+    													20, Tamaño.MEDIO);
 
 }

@@ -12,9 +12,14 @@ public record Nucleo(String nombre, 	 int vidaBase, 	 int fuerza, 		int agilidad
 	
 implements PlantillaEnte {
 	
-	public static final Ente nucleo = new Ente ("Nucleo", 999, 99, 99, 99, 
-													99, 99, 99, 99,99,
-													99, 99, 99, 99, 99,
-													Tamaño.MEDIO );
+	public static final Ente nucleo = new Ente ("Nucleo", 10, 1, 1, 1, 
+													1, 1, 1, 1,1,
+													1, 1, 1, 1, 1,
+													Tamaño.PEQUEÑO );
+	public static final Ente corazon = new Ente ("Corazon", 10, 1, 1, 1, 
+															1, 1, 1, 1,1,
+															1, 1, 1, 1, 1,
+															Tamaño.PEQUEÑO );
+
 
 }

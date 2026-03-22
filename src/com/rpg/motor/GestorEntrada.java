@@ -8,6 +8,7 @@ import herramientas.texto.Narrador;
 import com.rpg.combate.ArbitroCombate;
 import com.rpg.combate.AtaqueBase;
 import com.rpg.ente.Atributo;
+import com.rpg.ente.Creador;
 import com.rpg.ente.Ente;
 import com.rpg.ente.Funcion;
 import com.rpg.ente.ParteDelCuerpo;
@@ -113,53 +114,78 @@ public final class GestorEntrada {
                     jugador.hablar("Intentar comer un " + item.obtenerNombre() + " no parece buena idea.");
                 }
             }
+            case ABRIR -> { // Comando: "abrir gallo"
+                Ente contenedor = jugador.buscarEnAlcance(nombreObj, escenaActual.obtenerPresentes());
+                
+                if (contenedor == null) {
+                    // Si no está en el suelo, buscamos en nuestro inventario
+                    contenedor = jugador.buscarEnInventario(nombreObj);
+                }
+
+                if (contenedor != null && !contenedor.obtenerInventario().isEmpty()) {
+                    // Sacamos al primer hijo de la matruza
+                    Ente liberado = contenedor.obtenerInventario().remove(0); 
+                    
+                    // Lo posicionamos cerca del jugador para que sea visible
+                    liberado.teletransportar(jugador.obtenerPosicionX() + 1, 
+                                             jugador.obtenerPosicionY(), 
+                                             jugador.obtenerPosicionZ() + 1);
+                    
+                    escenaActual.agregarEnte(liberado);
+                    
+                    Narrador.obtenerInstancia().narrar("¡" + contenedor.obtenerNombre() + " se abre! " + 
+                                                      liberado.obtenerNombre() + " ha emergido.", 30);
+                } else {
+                    System.out.println("El objeto está vacío o no se puede abrir.");
+                }}
+            case GUARDAR -> {
+                Narrador.obtenerInstancia().narrar("Guardando esencia en el registro universal...", 40);
+                herramientas.guardado.GestorGuardado.guardarProgreso(jugador);
+                System.out.println(">>> [SISTEMA]: Partida guardada con éxito.");
+            }
+            case SPAWN -> { // Comando: "spawn slime 10" (Crea 10 slimes)
+                String[] info = nombreObj.split(" ");
+                String tipo = info[0].toUpperCase();
+                int cantidad = (info.length > 1) ? Integer.parseInt(info[1]) : 1;
+
+                for (int i = 0; i < cantidad; i++) {
+                    Ente nuevo;
+                    // Decidimos qué crear según el texto
+                    if (tipo.contains("ORCO")) nuevo = Creador.obtenerInstancia().crearNuevoEnte("Orco_Spawned", Funcion.SUJETO);
+                    else if (tipo.contains("SLIME")) nuevo = Creador.obtenerInstancia().crearNuevoEnte("Slime_Spawned", Funcion.ALIMENTO);
+                    else nuevo = Creador.obtenerInstancia().crearNuevoEnte("Cosa_Desconocida", Funcion.OBJETO);
+
+                    // Lo ponemos en una posición aleatoria del mapa procedural
+                    nuevo.teletransportar(Math.random() * 20, 0, Math.random() * 20);
+                    escenaActual.agregarEnte(nuevo);
+                }
+                System.out.println(">>> Spawn exitoso: " + cantidad + " entes de tipo " + tipo);
+            }
             case LANZAR -> {
                 // Lógica de proyectil
                 item.cambiarFuncion(Funcion.ARMA);
                 System.out.println("¡Lanzas el " + item.obtenerNombre() + "!");
             }
             case ATACAR -> {
-                // Si el usuario escribió "atacar slime ojo", 'objetivo' tiene "slime ojo"
                 String[] info = nombreObj.split(" ");
                 String nombreEnte = info[0];
-                String parteNombre = (info.length > 1) ? info[1] : "CUERPO";
+                String parteNombre = (info.length > 1) ? info[1].toUpperCase() : "TORSO";
 
                 Ente victima = jugador.buscarEnAlcance(nombreEnte, escenaActual.obtenerPresentes());
-                ParteDelCuerpo parte = ParteDelCuerpo.valueOf(parteNombre.toUpperCase());
-
-                ArbitroCombate.procesarAtaqueDirigido(jugador, victima, AtaqueBase.CABEZAZO, parte);
+                
+                if (victima != null) {
+                    try {
+                        ParteDelCuerpo parte = ParteDelCuerpo.valueOf(parteNombre);
+                        ArbitroCombate.procesarAtaqueDirigido(jugador, victima, AtaqueBase.CABEZAZO, parte);
+                    } catch (IllegalArgumentException e) {
+                        System.out.println("La parte '" + parteNombre + "' no es válida. Intentando al TORSO...");
+                        ArbitroCombate.procesarAtaqueDirigido(jugador, victima, AtaqueBase.CABEZAZO, ParteDelCuerpo.TORSO);
+                    }
+                }
             }
             // ... otros casos
             default -> System.out.println("Aún no sé cómo " + orden.verbo() + " un objeto.");
         }
     }
-/*
-    private void procesarComando(String comando, Ente jugador) {
-      switch (comando) {
-      	case "hablar" -> 
-      		jugador.hablar("Santo Santo Santo");
-      
-      	case "comer" -> {
-      		Narrador.obtenerInstancia().narrar("Buscando algo para comer... ", 20);
-      		Narrador.obtenerInstancia().narrar("Objetivo localizado:", 40);
-      	// Aquí luego conectaremos con la lógica de inventario o escena
-      	}
-      	case "estadistica" -> 
-      		Narrador.obtenerInstancia().narrar(jugador.toString(), 10);
-      		
-      	case "ayuda" ->
-      		System.out.println("Comandos disponibles: hablar, comer, estadistica, ayuda, salir");
-      		
-      	default -> {
-      		if (comando.startsWith("ir ")) {
-      			System.out.println("Validando ruta hacia" + comando.substring(3));
-      		}else {
-      			System.out.println(comando + " Comando no existe.");
-      			Narrador.obtenerInstancia().narrar("intenta con el comando - ayuda - ", 5);
-      		}
-      	}
-}}
-
-*/
     
 }

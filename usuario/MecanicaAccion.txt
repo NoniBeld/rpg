@@ -1,0 +1,100 @@
+    public void decidirAccion(List<Ente> otrosEnEscena) {
+        if (this.obtenerValorAtributo(Atributo.VIDA) < 50) {
+            // Si tiene poca vida, busca comida
+            Ente presa = otrosEnEscena.stream()
+                .filter(e -> e != this && e.obtenerFuncionActual() == Funcion.ALIMENTO)
+                .findFirst().orElse(null);
+                
+            if (presa != null && calcularDistancia(presa) < 2.0f) {
+                this.interactuar(presa); // Aquí se dispara el Sistema Digestivo
+            } else if (presa != null) {
+                this.moverHacia(presa);
+            }
+        }
+    }
+    
+    public void hablar(String mensaje) {
+    	String formato = String.format("[%s]: %s", this.obtenerNombre(), mensaje);    	
+    	herramientas.texto.Narrador.obtenerInstancia().narrar(formato, 40);
+    }
+
+    public void cambiarFuncion(Funcion nuevaFuncion) {
+        herramientas.texto.Narrador.obtenerInstancia().narrar(
+            String.format("¡Atención! %s ha dejado de ser %s para convertirse en %s.", 
+            nombre, funcionActual, nuevaFuncion), 30);
+        this.funcionActual = nuevaFuncion;
+    }
+    public void alSerConsumido() {
+        if (this.nombre.contains("Semilla")) {
+            this.hablar("Espero que la tierra donde caiga sea fértil...");
+        } else {
+            this.hablar("Mi materia servirá para otro propósito.");
+        }
+    }
+    private void inicializarComportamientos() {
+        comportamientos.put(Funcion.ALIMENTO, this::consumir);
+        comportamientos.put(Funcion.ARMA, obj -> {
+            recoger(obj);
+            this.hablar("¡Un arma nueva!");
+        });
+        comportamientos.put(Funcion.SUJETO, obj -> this.hablar("Hola, " + obj.obtenerNombre()));
+    }
+    public Tamaño obtenerTamaño() {
+        return this.tamañoActual;
+    }
+    /**
+     * Permite cambiar la escala del Ente (por encogimiento mágico o crecimiento).
+     */
+    public void cambiarTamaño(Tamaño nuevoTamaño) {
+        this.tamañoActual = nuevoTamaño;
+        Narrador.obtenerInstancia().narrar(
+            String.format("¡%s ha cambiado su escala de existencia a %s!", this.nombre, nuevoTamaño), 
+            30
+        );
+    }
+public void decidirAccion(Escena escena) {
+	
+	Ente objetivo = escena.obtenerPresentes().stream()
+	        .filter(e -> e != this && e.obtenerEstadoVital() == EstadoVital.VIVO)
+	        .filter(e -> !e.obtenerNombre().contains(this.nombre.split("_")[0])) // No atacar a mis clones
+	        .min((e1, e2) -> Float.compare(calcularDistancia(e1), calcularDistancia(e2)))
+	        .orElse(null);
+    if (this.obtenerEstadoVital() != EstadoVital.VIVO) return;
+
+    // 1. PRIORIDAD ABSOLUTA: HAMBRE
+    if (this.hambre > 80) {
+        Ente comida = escena.buscarObjetivoCercano(this);
+        if (comida != null && (comida.obtenerFuncionActual() == Funcion.ALIMENTO || comida.obtenerEstadoVital() != EstadoVital.VIVO)) {
+            ejecutarMovimientoOInteraccion(comida, () -> this.consumir(comida));
+            return;
+        }
+    }
+
+    // 2. COMPORTAMIENTO POR ALINEAMIENTO (CAÓTICO MALO)
+    if (this.etica == EjeEtico.CAOTICO && this.moral == EjeMoral.MALO) {
+      //  Ente objetivo = escena.buscarObjetivoCercano(this);
+        
+        if (objetivo != null) {
+            if (objetivo.obtenerEstadoVital() == EstadoVital.VIVO) {
+                // Si está vivo, pelear
+                ejecutarMovimientoOInteraccion(objetivo, () -> ArbitroCombate.procesarDuelo(this, objetivo, AtaqueBase.EMBESTIDA));
+            } else {
+                // Si está muerto/caído, saquear y deshuesar
+                ejecutarMovimientoOInteraccion(objetivo, () -> {
+                    this.ejecutarDeshuesar(objetivo);
+                    escena.removerEnte(objetivo);
+                });
+            }
+        }
+    }
+}
+
+	public void establecerAlineamiento(EjeEtico e, EjeMoral m) {
+	    this.etica = e;
+	    this.moral = m;
+	}
+
+
+
+
+  

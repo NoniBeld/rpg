@@ -1,6 +1,24 @@
-Nombre: Slime_Jugador
-Raza: Slime_Mora
-HP: 150
-Hambre: 20
-PosX: 0.0 | PosY: 100.0 | PosZ: 0.0
-Alineamiento: NEUTRAL_CAOTICO
+[IDENTIDAD]
+ID:999
+Nombre:Adan
+Raza:Humano
+TipoDeSer:ORGANICO
+EstadoMateria:SOLIDO
+EstadoVital:VIVO
+
+[ALINEAMIENTO]
+Etica:CAOTICO
+Moral:NEUTRAL
+
+[ESTADISTICAS]
+STR:20|AGI:25|CON:15|INT:10|SAB:10|CAR:10|LUK:15|CRT:5|RES:10|SPI:10|MAG:20
+
+[ANATOMIA]
+Chasis:HUMANOIDE
+Integridad:INTEGRO
+Escala:MEDIO
+
+[MUNDO]
+Posicion:0,100,0
+Hambre:30
+Inventario:[]

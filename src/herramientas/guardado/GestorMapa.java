@@ -50,12 +50,27 @@ public class GestorMapa {
     }
     
     private static Ente reconstruirEnte(String datos) {
-        // ID:1|N:Slime|F:SUJETO|V:40...
+        // El split separa: ["1", "Slime", "SUJETO", "10.5,0.0,5.2", "100"]
         String[] partes = datos.split("\\|");
-        String nombre = partes[1].split(":")[1];
-        // Aquí usamos el Creador para instanciar y luego setear los valores guardados
-        Ente nuevo = Creador.obtenerInstancia().crearNuevoEnte(nombre, null); 
-        // Lógica para parsear vida, atributos, etc.
+        
+        int id = Integer.parseInt(partes[0]);
+        String nombre = partes[1];
+        com.rpg.ente.Funcion funcion = com.rpg.ente.Funcion.valueOf(partes[2]);
+        
+        // Usamos el creador para la base
+        Ente nuevo = Creador.obtenerInstancia().crearNuevoEnte(nombre, funcion);
+        
+        // Parseamos la posición (X,Y,Z)
+        String[] coords = partes[3].split(",");
+        double x = Double.parseDouble(coords[0]);
+        double y = Double.parseDouble(coords[1]);
+        double z = Double.parseDouble(coords[2]);
+        nuevo.teletransportar(x, y, z);
+        
+        // Parseamos la vida
+        int vida = Integer.parseInt(partes[4]);
+        nuevo.establecerValorAtributo(com.rpg.ente.Atributo.VIDA, vida);
+        
         return nuevo;
     }
 

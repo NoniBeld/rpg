@@ -1,0 +1,154 @@
+  public void recibirImpactoLocalizado(int daño, ParteDelCuerpo zona) {
+        int saludZona = integridadFisica.getOrDefault(zona, 0);
+        int nuevaSaludZona = Math.max(0, saludZona - daño);
+        
+        integridadFisica.put(zona, nuevaSaludZona);
+
+        // El daño a la zona se transmite al cuerpo principal (puntosDeVidaActuales)
+        // aplicando el multiplicador de importancia de esa parte
+        int dañoAlTotal = (int) (daño * zona.multiplicadorDañoAlTotal);
+        this.recibirImpacto(dañoAlTotal);
+
+        if (nuevaSaludZona <= 0) {
+            Narrador.obtenerInstancia().narrar("¡La parte [" + zona + "] de " + this.nombre + " ha sido destrozada!", 20);
+        }
+    }
+
+    public int calcularVidaMaximaOrganica() {
+        int sumaPartes = 0;
+        for (int saludParte : integridadFisica.values()) {
+            sumaPartes += saludParte;
+        }
+        
+        int bonoGenetico = obtenerValorAtributo(Atributo.CONSTITUCION) * 2;
+        int bonoArmadura = obtenerValorAtributo(Atributo.RESISTENCIA);
+        
+        return sumaPartes + bonoGenetico + bonoArmadura;
+    }
+
+  private void inicializarAnatomia() {
+        for (ParteDelCuerpo parte : ParteDelCuerpo.values()) {
+            // Usamos la salud base definida en el Enum ParteDelCuerpo
+            this.integridadFisica.put(parte, parte.saludBase);
+        }
+    }
+
+    public void recibirImpacto(int cantidad) {
+        this.puntosDeVidaActuales -= cantidad;
+        
+        verificarEstadoFisico();
+    }
+
+    private void verificarEstadoFisico() {
+        if (puntosDeVidaActuales > 0) {
+            this.estadoActual = EstadoMateria.SOLIDO; // O el que tuviera
+        } else if (puntosDeVidaActuales < 0 && puntosDeVidaActuales > -100) {
+            // Aquí entra tu idea: Vida Negativa
+            this.hablar("Mi esencia se oscurece... Vida actual: " + puntosDeVidaActuales);
+        } else if (puntosDeVidaActuales <= -100) {
+            this.hablar("Mi cuerpo no soporta más el vacío. Desvaneciendo...");
+            // Lógica de eliminación del mapa
+        }
+    }
+
+ public void transformar(Potencia nuevaPotencia) {
+        this.potenciaActual = nuevaPotencia;
+        
+        switch (nuevaPotencia) {
+            case DIGERIDO -> {
+                this.nombre = "Excremento de " + this.nombre;
+                this.cambiarFuncion(Funcion.ALIMENTO);
+                this.establecerValorAtributo(Atributo.SUERTE, 1);
+            }
+            case QUEMADO -> {
+                this.nombre = "Cenizas de " + this.nombre;
+                this.cambiarFuncion(Funcion.OBJETO);
+            }
+            case SANGRIENTO -> {
+                this.nombre = "Restos óseos de " + this.nombre;
+            }
+            case HAMBRIENTO -> {
+                this.nombre = "Rugido de estómago de " + this.nombre;
+                this.cambiarFuncion(Funcion.SUJETO);
+                this.establecerValorAtributo(Atributo.AGILIDAD, obtenerValorAtributo(Atributo.AGILIDAD) - 1);
+            }
+            case INTEGRO, OXIDADO, PROCESANDO -> {
+                this.nombre = " " + this.nombre; // O déjalo sin cambios
+            }
+        } // Cierre del switch
+        
+        Narrador.obtenerInstancia().narrar("La potencia de " + this.nombre + " ahora es: " + nuevaPotencia, 30);
+    } // Cierre del método
+
+
+    public void procesarDescomposicion(float horasPasadas) {
+        // Si el objeto está preservado (por sal, magia o frío), no se pudre.
+        if (this.obtenerValorAtributo(Atributo.RESISTENCIA) > 999) return; 
+
+        // La descomposición se acelera con la temperatura ambiente
+        // (A mayor calor, más rápido se pudre)
+        // float factorClima = climaActual.temperaturaAmbiente() / 20.0f;
+        
+        // Si el Ente es un "Resto", buscamos su tiempo base en el Enum
+        for (ParteDelCuerpo parte : ParteDelCuerpo.values()) {
+            if (this.nombre.contains(parte.name())) {
+                float tiempoFinal = parte.tiempoDescomposicion;
+                
+                // Si el tiempo de vida del resto superó su límite
+                if (horasPasadas > tiempoFinal && tiempoFinal > 0) {
+                    this.transformar(Potencia.DIGERIDO); // O un nuevo estado: PODRIDO
+                    this.cambiarNombre("Restos Podridos de " + parte.name());
+                    this.establecerValorAtributo(Atributo.VIDA, -10); // Ahora quita vida al comerlo
+                }
+            }
+        }
+    }
+        public int obtenerVidaMax() {
+        return puntosDeVidaMaximos;
+    }
+
+ public void morir(Integridad integridad) {
+        this.estadoActual = EstadoMateria.SOLIDO; // O ETÉREO si es místico
+        
+        // Si está INTACTO, podemos extraer el "Corazón de Slime"
+        if (integridad == Integridad.INTACTO) {
+            Ente corazon = Creador.obtenerInstancia().crearNuevoEnte("Corazón Puro", Funcion.ALIMENTO);
+            this.inventario.add(corazon);
+        }
+        
+        // Soltamos todo al suelo de la Escena
+        this.hablar("Mi forma física se desmorona...");
+    }
+      public void aplicarEntropia(float deltaTiempo, Clima climaActual) {
+        // 1. Si el objeto es PRESERVADO, ignoramos la entropía
+        if (this.obtenerValorAtributo(Atributo.RESISTENCIA) > 999) return;
+
+        // 2. Lógica para ALIMENTOS / PARTES ORGÁNICAS (Pudrición)
+        if (this.funcionActual == Funcion.ALIMENTO || nombre.contains("Resto de")) {
+            this.tiempoVidaRestante -= deltaTiempo * (climaActual.temperaturaAmbiente() / 20.0f);
+            
+            if (this.tiempoVidaRestante <= 0) {
+                this.cambiarFuncion(Funcion.ALIMENTO); // Se vuelve abono/excremento
+                this.transformar(Potencia.DIGERIDO);
+                this.cambiarNombre("Materia Orgánica Descompuesta de " + this.nombre);
+            }
+        }
+
+        // 3. Lógica para ARMAS / CONTENEDORES (Desgaste)
+        if (this.funcionActual == Funcion.ARMA || this.funcionActual == Funcion.CONTENEDOR) {
+            if (this.obtenerValorAtributo(Atributo.RESISTENCIA) <= 0) {
+                this.cambiarFuncion(Funcion.OBJETO);
+                this.cambiarNombre(this.nombre + " (Roto/Inservible)");
+                // Aquí el "recolector de basura" podría eliminarlo si nadie lo recoge en X tiempo
+            }
+        }
+    }
+
+    public EstadoVital obtenerEstadoVital() {
+        if (this.puntosDeVidaActuales <= 0) {
+            return EstadoVital.MUERTO; // Forzamos que si es <= 0, para la IA sea un cadáver
+        }
+        return EstadoVital.VIVO;
+    }
+	
+

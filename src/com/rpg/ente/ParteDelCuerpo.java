@@ -17,7 +17,8 @@ public enum ParteDelCuerpo {
 	PIERNA_IZQ(20, 0.5f, 0.7f, 0.8f, 1.5f), // Daño reducido, pero afecta movimiento
 	PIERNA_DER(20, 0.5f, 0.7f, 0.8f, 1.5f),
 	BRAZO_DER(20, 0.5f, 0.7f, 0.8f, 1.5f), 
-	CUERPO_GELATINOSO(100, 1.0f, 1.0f, 1.0f, 12.5f); 
+	CUERPO_GELATINOSO(100, 1.0f, 1.0f, 1.0f, 12.5f), 
+	CADAVER(100, 1.0f, 1.0f, 1.0f, 12.5f);
 
 
 	public final int saludBase;

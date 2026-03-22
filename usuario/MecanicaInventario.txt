@@ -1,0 +1,110 @@
+    public List<Ente> obtenerInventario() {
+        return this.inventario;
+    }
+    public void establecerArmaEquipada(Ente arma) {
+        this.armaEquipada = arma;
+        Narrador.obtenerInstancia().narrar(this.nombre + " empuña su " + arma.obtenerNombre(), 20);
+    }
+
+    public Ente obtenerArmaEquipada() {
+        return this.armaEquipada;
+    }
+/**
+     * Busca un ente dentro del inventario por su nombre.
+     * @param nombreObjetivo El texto introducido por el usuario.
+     * @return El Ente encontrado o null si no existe.
+     */
+ public Ente buscarEnInventario(String nombreObjetivo) {
+        return this.inventario.stream()
+            .filter(e -> e.obtenerNombre().equalsIgnoreCase(nombreObjetivo))
+            .findFirst()
+            .orElse(null); 
+    }
+        /**
+     * Busca un objetivo primero en el inventario y luego en la escena actual.
+     */
+    public Ente buscarEnAlcance(String nombre, List<Ente> entesEnEscena) {
+        // 1. Buscar en lo que cargo (Prioridad)
+        Ente encontrado = buscarEnInventario(nombre);
+        
+        // 2. Si no lo tengo, buscar en el suelo (Escena)
+        if (encontrado == null) {
+            encontrado = entesEnEscena.stream()
+                .filter(e -> e.obtenerNombre().equalsIgnoreCase(nombre))
+                .findFirst()
+                .orElse(null);
+        }
+        
+        return encontrado;
+    }
+ public void mostrarContenido(int nivel) {
+        String sangria = "  ".repeat(nivel); // Para crear jerarquía visual
+        
+        if (this.inventario.isEmpty()) {
+            System.out.println(sangria + "- (Vacío)");
+            return;
+        }
+
+        for (Ente e : this.inventario) {
+            System.out.println(sangria + "└─ " + e.obtenerNombre() + " [" + e.obtenerFuncionActual() + "]");
+            // Si el objeto es un CONTENEDOR, mostramos su interior también
+            if (e.obtenerFuncionActual() == Funcion.CONTENEDOR) {
+                e.mostrarContenido(nivel + 1);
+            }
+        }
+    }
+    public void recoger(Ente objeto) {
+    	if(objeto.obtenerFuncionActual() != Funcion.SUJETO) {
+    		this.inventario.add(objeto);
+    		Narrador.obtenerInstancia().narrar(this.nombre + "ha Guardado " + objeto.obtenerNombre(), 30);
+    	}
+    }
+public void tirar(ente objeto) {…
+
+        public void interactuar(Ente objetivo) {
+        comportamientos.getOrDefault(objetivo.obtenerFuncionActual(), 
+            obj -> this.hablar("No sé qué hacer con esto.")
+        ).accept(objetivo);
+    }
+   public void ejecutarDeshuesar(Ente cadaver) {
+    Narrador narrador = Narrador.obtenerInstancia();
+    narrador.narrar(String.format("=== PROCESANDO RESTOS DE %s ===", cadaver.obtenerNombre().toUpperCase()), 20);
+
+    // 1. FASE DE SAQUEO (Objetos, Armas, etc.)
+    List<Ente> loot = cadaver.obtenerInventario();
+    if (loot != null && !loot.isEmpty()) {
+        System.out.println("[SISTEMA]: " + this.nombre + " registra pertenencias de " + cadaver.obtenerNombre());
+        for (Ente objeto : new ArrayList<>(loot)) {
+            this.inventario.add(objeto);
+            System.out.println("   -> [HALLAZGO]: Reclamado " + objeto.obtenerNombre());
+        }
+        loot.clear(); // El cadáver queda vacío de objetos
+    }
+
+    // 2. FASE DE COSECHA BIOLÓGICA (Partes del cuerpo)
+    System.out.println("[SISTEMA]: Iniciando despiece orgánico...");
+    
+    // Usamos el entrySet para recorrer el mapa una sola vez
+    for (Map.Entry<ParteDelCuerpo, Integer> entrada : cadaver.integridadFisica.entrySet()) {
+        ParteDelCuerpo parte = entrada.getKey();
+        int integridad = entrada.getValue();
+
+        if (integridad > 0) {
+            // Creamos el trofeo orgánico
+            Ente trofeo = Creador.obtenerInstancia().crearNuevoEnte(
+                "Resto de " + parte + " (" + cadaver.obtenerNombre() + ")", 
+                Funcion.ALIMENTO
+            );
+            
+            // Guardamos la calidad de la parte en el nuevo ente (opcional)
+            trofeo.establecerValorAtributo(Atributo.RESISTENCIA, integridad);
+            this.inventario.add(trofeo);
+            
+            System.out.println(String.format("   -> [COSECHA]: %s extraído con éxito (Calidad: %d%%)", parte, integridad));
+        } else {
+            System.out.println("   -> [FALLO]: El " + parte + " está demasiado destrozado.");
+        }
+    }
+    
+    narrador.narrar("Procesamiento de " + cadaver.obtenerNombre() + " finalizado.", 10);
+}

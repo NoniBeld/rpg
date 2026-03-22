@@ -125,11 +125,11 @@ public static void procesarAtaqueDirigido(Ente atk, Ente def, AtaqueBase habilid
     
     if (dañoFinal >= def.obtenerVidaActual() && (parte == ParteDelCuerpo.OJO || parte == ParteDelCuerpo.CABEZA || parte == ParteDelCuerpo.NUCLEO)) {
         Narrador.obtenerInstancia().narrar("¡EJECUCIÓN PERFECTA! El impacto destruyó un centro vital.", 10);
-        def.morir(Integridad.INTACTO); 
+        def.modificarVidaActual(-dañoFinal); // Esto disparará la lógica de muerte interna
     } else {
-        def.recibirImpacto(dañoFinal);
-        if (def.obtenerVidaActual() <= 0) def.morir(Integridad.MAGULLADO);
+        def.recibirImpactoLocalizado(dañoFinal, parte); // Usamos el impacto localizado
     }
+
 }
 public static ParteDelCuerpo calcularZonaImpacto() {
     int dado = new java.util.Random().nextInt(20) + 1; // 1 a 20

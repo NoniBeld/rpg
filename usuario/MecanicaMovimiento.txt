@@ -1,0 +1,152 @@
+  private void moverHacia(Ente presa) {
+		// TODO Auto-generated method stub
+		
+	}
+    public void teletransportar(float x, float y, float z) {
+        this.posicionX = x; this.posicionY = y; this.posicionZ = z;
+    }
+        public float calcularDistancia(Ente otro) {
+        float deltaX = otro.posicionX - this.posicionX;
+        float deltaY = otro.posicionY - this.posicionY;
+        float deltaZ = otro.posicionZ - this.posicionZ;
+
+        // Aplicamos Pitágoras: d = sqrt(dx² + dy² + dz²)
+        return (float) Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+    }
+    // Métodos para modificar el estado sin destruir el objeto
+    public void mover(float deltaX, float deltaY) {
+        this.posicionX += deltaX;
+        this.posicionY += deltaY;
+    }
+
+      //--------------------   Fisica  ----------------------------------------------
+    
+    /**
+     * Determina si otro ente está dentro de un rango de visión o percepción.
+     */
+    public boolean percibir(Ente otro, float rangoDeVision) {
+        return calcularDistancia(otro) <= rangoDeVision;
+    }
+    
+    /**
+     * Traduce datos invisibles (entropía, tamaño, clima) en mensajes para el Narrador.
+     */
+    public void percibirEntorno(Escena escenaActual) {
+        Narrador n = Narrador.obtenerInstancia();
+        
+        for (Ente cercano : escenaActual.obtenerPresentes()) {
+            if (cercano == this) continue;
+
+            float distancia = this.calcularDistancia(cercano);
+            
+            // Lógica de sentidos según TAMAÑO y DISTANCIA
+            if (this.tamañoActual == Tamaño.MEDIO && cercano.obtenerTamaño() == Tamaño.MICROSCOPICO) {
+                if (distancia < 1.0f) n.narrar("[OLFATO]: Un olor acre a descomposición flota en el aire...", 50);
+            }
+            
+            if (cercano.obtenerVidaActual() < 0) {
+                n.narrar("[VISTA]: Ves un aura oscura emanando de los restos de " + cercano.obtenerNombre(), 40);
+            }
+        }
+    }
+    /**
+     * Actualiza el estado del ente basándose en el tiempo transcurrido.
+     * @param delta El tiempo que ha pasado desde la última actualización.
+     */
+    public void actualizar(double delta) {
+    	float deltaSubjetivo = (float) delta * tamañoActual.factorReloj;
+    	int recuperacion = (int) (obtenerValorAtributo(Atributo.CONSTITUCION) * 0.1f);
+        int resActual = obtenerValorAtributo(Atributo.RESISTENCIA);
+    	// Aquí podemos implementar regeneración pasiva, efectos de veneno, etc.
+        if (resActual < 100) {
+            establecerValorAtributo(Atributo.RESISTENCIA, resActual + recuperacion);
+        }
+        // Ejemplo: Recuperar 1 punto de VIDA cada 60 segundos si está descansando
+        if (obtenerValorAtributo(Atributo.VIDA) < 100) {
+            // Lógica de recuperación basada en delta
+        }
+        if (resActual < 100) { // Supongamos que 100 es el máximo
+            establecerValorAtributo(Atributo.RESISTENCIA, resActual + recuperacion);
+        }
+        
+        aplicarEntropia(deltaSubjetivo, null);
+    }
+
+  
+    
+    public void sentirClima(Clima climaActual) {
+        float diferencia = Math.abs(climaActual.temperaturaAmbiente() - temperaturaIdeal);
+        
+        if (diferencia > 15.0f) {
+            this.hablar("¡El clima es insoportable! Me siento débil.");
+            // Aquí el framework podría bajarle la FUERZA automáticamente
+        } else {
+            this.hablar("El clima de " + climaActual.nombre() + " me sienta bien.");
+        }
+    }
+   public String compactar() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ID:").append(identificadorUnico).append("|");
+        sb.append("N:").append(nombre).append("|");
+        sb.append("F:").append(funcionActual).append("|");
+        sb.append("V:").append(puntosDeVidaActuales).append("|");
+        
+        // Solo guardamos anatomía si está dañado (Ahorro de espacio)
+        if (puntosDeVidaActuales < puntosDeVidaMaximos) {
+            sb.append("ANT:").append(integridadFisica.toString());
+        }
+        
+        return sb.toString();
+    }
+
+private void ejecutarMovimientoOInteraccion(Ente objetivo, Runnable accion) {
+    double dist = calcularDistancia(objetivo);
+    if (dist < 1.5) {
+        accion.run();
+    } else {
+        this.avanzarHacia(objetivo.obtenerPosicionX(), objetivo.obtenerPosicionY(), objetivo.obtenerPosicionZ());
+    }
+}
+	public double obtenerAlcance() {
+	    // Lógica de congruencia: Un Ente COLOSAL llega más lejos que uno MEDIO
+	    return switch (this.tamañoActual) {
+	        case MICROSCOPICO -> 0.01;
+	        case PEQUEÑO -> 0.5;
+	        case MEDIO -> 1.5;   // Rango estándar de una espada/brazo
+	        case GRANDE -> 3.0;
+	        case COLOSAL -> 10.0;
+	        default -> 1.0;
+	    };
+	}
+	public double obtenerPosicionX() { return this.posicionX; }
+	public double obtenerPosicionY() { return this.posicionY; }
+	public double obtenerPosicionZ() { return this.posicionZ; }
+
+	public void avanzarHacia(double destinoX, double destinoY, double destinoZ) {
+	    // 1. Calculamos el vector de dirección
+	    double dirX = destinoX - this.posicionX;
+	    double dirY = destinoY - this.posicionY;
+	    double dirZ = destinoZ - this.posicionZ;
+
+	    // 2. Calculamos la distancia total para normalizar el vector
+	    double distancia = Math.sqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
+
+	    if (distancia > 0) {
+	        // 3. Velocidad: Usamos la AGILIDAD para determinar qué tan rápido camina
+	        // Por ejemplo: Agilidad / 10 = unidades por turno
+	        double velocidad = this.obtenerValorAtributo(Atributo.AGILIDAD) / 10.0;
+	        
+	        // Si la velocidad es mayor que la distancia, llegamos al destino
+	        double paso = Math.min(velocidad, distancia);
+
+	        this.posicionX += (dirX / distancia) * paso;
+	        this.posicionY += (dirY / distancia) * paso;
+	        this.posicionZ += (dirZ / distancia) * paso;
+	        
+	        System.out.println(String.format("[%s] se mueve a (%.2f, %.2f, %.2f)", 
+                    this.nombre, this.posicionX, this.posicionY, this.posicionZ));
+	    }
+	}
+
+
+   

@@ -40,11 +40,6 @@ public final class Escena {
         }
     }
 
-    // --- LÓGICA MATEMÁTICA Y DE BÚSQUEDA ---
-
-    /**
-     * Calcula la distancia real entre dos puntos en el espacio XYZ.
-     */
     private double calcularDistancia(Ente a, Ente b) {
         if (a == null || b == null) return Double.MAX_VALUE;
         return Math.sqrt(
@@ -92,6 +87,24 @@ public final class Escena {
     	presentes.removeIf(e -> e.obtenerEstadoVital() == EstadoVital.ELIMINADO);
     	// 1. IMPRIMIR RADAR DE ESTADO
         System.out.println("\n--- ESTADO ACTUAL DEL CAMPO ---");
+        
+        List<Ente> copiaPresentes = new ArrayList<>(presentes);
+        
+        for (Ente e : copiaPresentes) {
+            // Aquí se disparan los errores 92 y 96 si Ente no tiene el método
+            if (e.obtenerEstadoVital() == EstadoVital.VIVO) {
+                e.decidirAccion(this); // El Ente usa su IA
+            }
+        }
+
+        // Reporte visual
+        for (Ente e : presentes) {
+            String estadoLabel = (e.obtenerEstadoVital() == EstadoVital.VIVO) ? "VIVO" : "CAÍDO";
+            System.out.println(String.format("[%s] HP: %d/%d | Pos: (%.1f, %.1f) | Estado: %s", 
+                e.obtenerNombre(), e.obtenerVidaActual(), e.obtenerVidaMax(), 
+                e.obtenerPosicionX(), e.obtenerPosicionZ(), estadoLabel));
+        }
+        
         for (Ente e : new ArrayList<>(presentes)) { 
             if (e.obtenerEstadoVital() == EstadoVital.VIVO) {
                 e.decidirAccion(this); 
@@ -153,12 +166,28 @@ public final class Escena {
     public String obtenerNombre() { return this.nombre; }
     public List<Ente> obtenerPresentes() { return this.presentes; }
 
-	public Ente obtenerMasDebil() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public void removerEnte(Ente objetivo) {
-		// TODO Auto-generated method stub
-		
-	}
+    /**
+     * Busca al ente vivo con la menor cantidad de vida actual.
+     * Ideal para IAs depredadoras o alineamientos malignos.
+     */
+    public Ente obtenerMasDebil() {
+        return presentes.stream()
+            .filter(e -> e.obtenerEstadoVital() == EstadoVital.VIVO) // Solo los que respiran
+            .min((e1, e2) -> Integer.compare(e1.obtenerVidaActual(), e2.obtenerVidaActual()))
+            .orElse(null); // Si no hay nadie, devuelve null
+    }
+
+    /**
+     * Elimina físicamente a un ente de la simulación.
+     * Se usa cuando un cuerpo es totalmente consumido o limpiado por el sistema.
+     */
+    public void removerEnte(Ente objetivo) {
+        if (objetivo != null && presentes.contains(objetivo)) {
+            presentes.remove(objetivo);
+            Narrador.obtenerInstancia().narrar(
+                String.format(">>> [SISTEMA]: %s ha sido removido de la existencia.", objetivo.obtenerNombre()), 
+                10
+            );
+        }
+    }
 }

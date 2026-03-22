@@ -1,15 +1,14 @@
 package com.rpg.ente;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
+import java.util.List;
 
 import com.rpg.ente.bestiario.PlantillaEnte;
-import com.rpg.ente.bestiario.fauna.Humano;
-import com.rpg.ente.bestiario.fauna.Orco;
 import com.rpg.ente.bestiario.fauna.Slime;
 
 /**
  * Fábrica encargada de centralizar la creación de entes.
- * Aplica el patrón GoF: Factory Method.
  */
 public final class Creador {
     private static Creador instancia;
@@ -27,17 +26,15 @@ public final class Creador {
     }
 
     public Ente crearNuevoEnte(String nombre, Funcion funcion) {
-        Ente nuevo =  new Ente(contadorDeIdentidad.incrementAndGet(), nombre, funcion);
+        Ente nuevo = new Ente(contadorDeIdentidad.incrementAndGet(), nombre, funcion);
         nuevo.teletransportar(0, 0, 0);
         return nuevo;
     }
- // En Creador.java
+
     public Ente instanciarDesdePlantilla(PlantillaEnte p) {
-        // 1. Creamos el objeto Ente base
         Ente nuevo = crearNuevoEnte(p.nombre(), Funcion.SUJETO);
         
-        // 2. Inyectamos los atributos desde la interfaz
-//      nuevo.establecerValorAtributo(Atributo., p.());
+        // Inyección de Atributos
         nuevo.establecerValorAtributo(Atributo.VIDA, p.vidaBase());
         nuevo.establecerValorAtributo(Atributo.FUERZA, p.fuerza());
         nuevo.establecerValorAtributo(Atributo.AGILIDAD, p.agilidad());
@@ -52,18 +49,48 @@ public final class Creador {
         nuevo.establecerValorAtributo(Atributo.CONSTITUCION, p.constitucion());
         nuevo.establecerValorAtributo(Atributo.VIDA_MAX, p.vida_max());
         nuevo.establecerValorAtributo(Atributo.MAGIA, p.magia());
-        nuevo.cambiarTamaño(p.escala());
         
-        // 3. ¡Listo! No importa si es Orco, Humano o Slime.
+        nuevo.cambiarTamaño(p.escala());
+
+        // Configuración de la anatomía según el tipo
+        if (p instanceof Slime) {
+            this.configurarCuerpo(nuevo, "AMORFO");
+        } else {
+            this.configurarCuerpo(nuevo, "HUMANOIDE");
+        }
+
         return nuevo;
     }
+
+    public void configurarCuerpo(Ente e, String chasis) {
+        // Obtenemos el mapa que vive dentro del componente vital del Ente
+        Map<ParteDelCuerpo, Integer> integridad = e.obtenerMapaIntegridad();
+        integridad.clear();
+        
+        switch (chasis.toUpperCase()) {
+            case "HUMANOIDE" -> {
+                for (ParteDelCuerpo p : List.of(
+                        ParteDelCuerpo.CABEZA, ParteDelCuerpo.TORSO, 
+                        ParteDelCuerpo.BRAZO_IZQ, ParteDelCuerpo.BRAZO_DER, 
+                        ParteDelCuerpo.PIERNA_IZQ, ParteDelCuerpo.PIERNA_DER)) {
+                    // IMPORTANTE: Usamos 'integridad' que es el mapa que acabamos de obtener
+                    integridad.put(p, p.saludBase);
+                }
+            }
+            case "AMORFO" -> {
+                integridad.put(ParteDelCuerpo.NUCLEO, 100);
+                integridad.put(ParteDelCuerpo.CUERPO_GELATINOSO, 200);
+            }
+        }
+    }
+
     public void imprimirFichaTecnica(Ente e) {
         System.out.println("\n===== FICHA GENÉTICA: " + e.obtenerNombre() + " =====");
         System.out.println("Fuerza: " + e.obtenerValorAtributo(Atributo.FUERZA) + 
                            " | Agilidad: " + e.obtenerValorAtributo(Atributo.AGILIDAD) + 
                            " | Suerte: " + e.obtenerValorAtributo(Atributo.SUERTE));
         System.out.println("Constitución: " + e.obtenerValorAtributo(Atributo.CONSTITUCION) + 
-                           " | Vida Max: " + e.obtenerVidaMax());
+                           " | Vida Actual: " + e.obtenerVidaActual());
         System.out.println("============================================\n");
     }
 }
