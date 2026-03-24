@@ -1,8 +1,8 @@
 package debug.z;
 
-import com.rpg.ente.Creador;
-import com.rpg.ente.Ente;
-import com.rpg.ente.Funcion;
+import com.ente.Creador;
+import com.ente.Ente;
+import com.ente.Funcion;
 import com.rpg.teatro.Escena;
 
 public class PruebaEscenario000 {

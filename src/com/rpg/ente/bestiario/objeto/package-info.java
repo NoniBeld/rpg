@@ -1,1 +1,0 @@
-package com.rpg.ente.bestiario.objeto;

@@ -1,10 +1,10 @@
 package debug.z;
 
-import com.rpg.ente.Creador;
-import com.rpg.ente.Ente;
-import com.rpg.ente.Funcion;
+import com.ente.Creador;
+import com.ente.Ente;
+import com.ente.Funcion;
 
-import herramientas.texto.Narrador;
+import com.herramientas.texto.Narrador;
 
 public class PruebaEnte003 {/*
     public static void main(String[] args) {

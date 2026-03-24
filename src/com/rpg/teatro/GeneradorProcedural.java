@@ -1,13 +1,14 @@
 package com.rpg.teatro;
 
-import com.rpg.ente.*;
-import com.rpg.ente.bestiario.*;
-import com.rpg.ente.bestiario.fauna.Humano;
-import com.rpg.ente.bestiario.fauna.Orco;
-import com.rpg.ente.bestiario.fauna.Slime;
 
-import herramientas.clima.*;
-import herramientas.tiempo.CalendarioLunar;
+import com.ente.Creador;
+import com.ente.bestiario.*;
+import com.ente.bestiario.fauna.Humano;
+import com.ente.bestiario.fauna.Orco;
+import com.ente.bestiario.fauna.Slime;
+
+import com.herramientas.clima.*;
+import com.herramientas.tiempo.CalendarioLunar;
 import java.util.Random;
 
 public class GeneradorProcedural {
@@ -43,15 +44,15 @@ public class GeneradorProcedural {
             
             switch (biomaActual) {
             case BOSQUE -> {
-                nueva.agregarEnte(c.instanciarDesdePlantilla(Humano.Adan));
-                nueva.agregarEnte(c.instanciarDesdePlantilla(Slime.SLIME_FRESA));
+                nueva.agregarEnte(c.instanciarDesdePlantilla(com.ente.bestiario.fauna.Humano.Adan));
+                nueva.agregarEnte(c.instanciarDesdePlantilla(com.ente.bestiario.fauna.Slime.SLIME_FRESA));
             }
                 case CUEVA_PROFUNDA -> {
-                    nueva.agregarEnte(c.instanciarDesdePlantilla(Orco.Og));
-                    nueva.agregarEnte(c.instanciarDesdePlantilla(Slime.MICRO_BASURERO));
+                    nueva.agregarEnte(c.instanciarDesdePlantilla(com.ente.bestiario.fauna.Orco.Og));
+                    nueva.agregarEnte(c.instanciarDesdePlantilla(com.ente.bestiario.fauna.Slime.MICRO_BASURERO));
                 }
                 case SELVA -> {
-                    nueva.agregarEnte(c.instanciarDesdePlantilla(Slime.SLIME_LIMON));
+                    nueva.agregarEnte(c.instanciarDesdePlantilla(com.ente.bestiario.fauna.Slime.SLIME_LIMON));
                 }
             }
         }

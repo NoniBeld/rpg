@@ -1,11 +1,11 @@
 package debug.z;
 
-import com.rpg.ente.Atributo;
-import com.rpg.ente.Creador;
-import com.rpg.ente.Ente;
+import com.ente.Atributo;
+import com.ente.Creador;
+import com.ente.Ente;
+import com.motor.Navegador;
 import com.rpg.ente.bestiario.fauna.Humano;
 import com.rpg.ente.bestiario.fauna.Slime;
-import com.rpg.motor.Navegador;
 import com.rpg.teatro.Escena;
 
 import herramientas.texto.Narrador;

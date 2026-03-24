@@ -1,9 +1,9 @@
 package debug.z;
 
-import com.rpg.ente.*;
+import com.ente.*;
 import com.rpg.teatro.Coliseo;
 
-import herramientas.clima.Clima;
+import com.herramientas.clima.Clima;
 
 public class PruebaClima000{/*
     public static void main(String[] args) {

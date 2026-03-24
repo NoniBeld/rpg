@@ -1,16 +1,17 @@
 package com.rpg.teatro;
 
-import com.rpg.combate.ArbitroCombate;
-import com.rpg.combate.AtaqueBase;
-import com.rpg.ente.Atributo;
-import com.rpg.ente.Ente;
-import com.rpg.ente.EstadoVital;
-import com.rpg.ente.ParteDelCuerpo;
-import com.rpg.ente.Tamaño;
-import herramientas.clima.Bioma;
-import herramientas.clima.Clima;
-import herramientas.texto.Narrador;
-import herramientas.tiempo.CalendarioLunar;
+import com.combate.ArbitroCombate;
+import com.combate.AtaqueBase;
+import com.ente.Atributo;
+import com.ente.Ente;
+import com.ente.EstadoVital;
+import com.ente.ParteDelCuerpo;
+import com.ente.Tamaño;
+
+import com.herramientas.clima.Bioma;
+import com.herramientas.clima.Clima;
+import com.herramientas.texto.Narrador;
+import com.herramientas.tiempo.CalendarioLunar;
 
 import java.util.ArrayList;
 import java.util.List;

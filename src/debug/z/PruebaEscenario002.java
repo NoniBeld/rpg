@@ -1,13 +1,15 @@
 package debug.z;
 
-import com.rpg.ente.*;
-import com.rpg.ente.bestiario.fauna.*;
-import com.rpg.ente.bestiario.flora.Musgo;
-import com.rpg.ente.bestiario.elemento.Hidrogeno;
-import com.rpg.combate.ArbitroCombate;
-import com.rpg.combate.AtaqueBase;
-import com.rpg.teatro.Escena;
-import herramientas.texto.Narrador;
+import com.combate.ArbitroCombate;
+import com.combate.AtaqueBase;
+import com.ente.Creador;
+import com.ente.Ente;
+import com.ente.ParteDelCuerpo;
+import com.ente.Tamaño;
+import com.ente.bestiario.fauna.Humano;
+import com.ente.bestiario.fauna.Orco;
+import com.ente.bestiario.fauna.Slime;
+import com.herramientas.texto.Narrador;
 
 public class PruebaEscenario002 {
     public static void main(String[] args) {
@@ -22,7 +24,7 @@ public class PruebaEscenario002 {
         Ente slime3 = c.instanciarDesdePlantilla(Slime.SLIME_MORA);
         
         // El Micro-entorno
-        Ente musgoLocal = c.instanciarDesdePlantilla(Musgo.musgo);
+        Ente musgoLocal = c.instanciarDesdePlantilla(com.ente.bestiario.flora.Musgo.musgo);
         
         n.narrar("=== BATTLE ROYALE BIOLÓGICO: SECTOR [0,0,0] ===", 10);
 
@@ -47,7 +49,7 @@ public class PruebaEscenario002 {
                 micro.interactuar(musgoLocal);
                 
                 // Liberación de Hidrógeno
-                Ente gas = c.instanciarDesdePlantilla(Hidrogeno.hidrogeno);
+                Ente gas = c.instanciarDesdePlantilla(com.ente.bestiario.elemento.Hidrogeno.hidrogeno);
                 n.narrar("Se libera una burbuja de " + gas.obtenerNombre() + " al aire.", 5);
             }
         }

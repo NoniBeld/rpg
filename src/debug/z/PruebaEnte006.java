@@ -1,12 +1,12 @@
 package debug.z;
 
-import com.rpg.combate.ArbitroCombate;
-import com.rpg.combate.AtaqueBase;
-import com.rpg.ente.*;
+import com.combate.ArbitroCombate;
+import com.combate.AtaqueBase;
+import com.ente.*;
 import com.rpg.teatro.Escena;
 
-import herramientas.clima.Clima;
-import herramientas.tiempo.*;
+import com.herramientas.clima.Clima;
+import com.herramientas.tiempo.*;
 
 public class PruebaEnte006 {/*
     public static void main(String[] args) {

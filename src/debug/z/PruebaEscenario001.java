@@ -1,6 +1,6 @@
  package debug.z;
 
-	import com.rpg.ente.*;
+	import com.ente.*;
 import com.rpg.teatro.Escena;
 
 import herramientas.tiempo.*;

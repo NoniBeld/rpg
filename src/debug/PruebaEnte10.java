@@ -1,11 +1,11 @@
 package debug;
 
-import com.rpg.ente.*;
-import com.rpg.ente.mecanica.*;
-import com.rpg.combate.*;
+import com.combate.*;
+import com.ente.*;
+import com.ente.mecanica.*;
 import com.rpg.teatro.Escena;
-import herramientas.clima.*;
-import herramientas.tiempo.CalendarioLunar;
+import com.herramientas.clima.*;
+import com.herramientas.tiempo.CalendarioLunar;
 
 public class PruebaEnte10 {
     public static void main(String[] args) {
@@ -55,6 +55,6 @@ public class PruebaEnte10 {
         arena.simularCiclo();
         
         // Guardamos el estado final del mundo
-        herramientas.guardado.GestorMapa.dormirEscena(arena);
+        com.herramientas.guardado.GestorMapa.dormirEscena(arena);
     }
 }

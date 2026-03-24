@@ -1,10 +1,11 @@
 package debug.z;
 
-import com.rpg.ente.*;
+import com.combate.ArbitroCombate;
+import com.combate.AtaqueBase;
+import com.ente.*;
 import com.rpg.ente.bestiario.fauna.Humano;
 import com.rpg.ente.bestiario.fauna.Orco;
-import com.rpg.combate.ArbitroCombate;
-import com.rpg.combate.AtaqueBase;
+
 import herramientas.texto.Narrador;
 
 public class PruebaEscenario006 {/*

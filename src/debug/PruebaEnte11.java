@@ -1,8 +1,9 @@
 package debug;
 
-import com.rpg.ente.*;
-import com.rpg.motor.Orden;
-import com.rpg.motor.Verbo;
+import com.ente.*;
+import com.motor.Orden;
+import com.motor.Verbo;
+
 import java.util.Stack;
 
 public class PruebaEnte11 {

@@ -1,12 +1,12 @@
 package debug.z;
 
-import com.rpg.ente.*;
-import com.rpg.motor.Navegador;
 import com.rpg.teatro.Escena;
 import herramientas.guardado.GestorGuardado;
 import herramientas.tiempo.CalendarioLunar;
 import herramientas.texto.Narrador;
 
+import com.ente.*;
+import com.motor.Navegador;
 import com.rpg.ente.bestiario.fauna.Humano;
 import com.rpg.ente.bestiario.fauna.Orco;
 import com.rpg.ente.bestiario.fauna.Slime;

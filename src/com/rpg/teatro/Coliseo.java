@@ -1,8 +1,9 @@
 package com.rpg.teatro;
 
-import com.rpg.ente.Ente;
-import com.rpg.ente.Atributo;
-import herramientas.texto.Narrador;
+import com.ente.Atributo;
+import com.ente.Ente;
+
+import com.herramientas.texto.Narrador;
 
 public final class Coliseo {
     

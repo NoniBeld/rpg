@@ -1,9 +1,9 @@
 package debug.z;
 
-import com.rpg.ente.*;
+import com.ente.*;
 
-import herramientas.clima.Clima;
-import herramientas.texto.Narrador;
+import com.herramientas.clima.Clima;
+import com.herramientas.texto.Narrador;
 
 public class PruebaEnte005 {/*
     public static void main(String[] args) {

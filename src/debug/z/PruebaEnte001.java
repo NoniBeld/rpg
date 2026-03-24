@@ -1,9 +1,10 @@
 package debug.z;
 
-import com.rpg.ente.Creador;
-import com.rpg.ente.Ente;
-import com.rpg.ente.Funcion;
-import herramientas.texto.Escritor; // Importamos tu interfaz
+import com.ente.Creador;
+import com.ente.Ente;
+import com.ente.Funcion;
+
+import com.herramientas.texto.Escritor; // Importamos tu interfaz
 
 public class PruebaEnte001 implements Escritor {/*
 

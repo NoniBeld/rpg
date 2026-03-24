@@ -1,7 +1,8 @@
 package debug.z;
 
-import com.rpg.ente.*;
-import herramientas.texto.Narrador;
+import com.ente.*;
+
+import com.herramientas.texto.Narrador;
 
 public class PruebaEnte004 {
     public static void main(String[] args) {

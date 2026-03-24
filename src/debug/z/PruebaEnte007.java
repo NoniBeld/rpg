@@ -1,7 +1,8 @@
 package debug.z;
 
-import com.rpg.ente.*;
-import com.rpg.combate.*;
+import com.combate.*;
+import com.ente.*;
+
 import herramientas.texto.Narrador;
 
 public class PruebaEnte007 {

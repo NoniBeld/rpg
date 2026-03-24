@@ -1,9 +1,10 @@
 package debug.z;
 
-import com.rpg.ente.*;
+import com.ente.*;
+import com.motor.Navegador;
 import com.rpg.ente.bestiario.fauna.*;
 import com.rpg.teatro.Escena;
-import com.rpg.motor.Navegador;
+
 import herramientas.texto.Narrador;
 import herramientas.tiempo.CalendarioLunar;
 

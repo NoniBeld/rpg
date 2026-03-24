@@ -1,7 +1,8 @@
 package debug.z;
 
-import com.rpg.motor.*;
-import com.rpg.ente.*;
+import com.ente.*;
+import com.motor.*;
+
 import herramientas.tiempo.CalendarioLunar;
 
 public class PruebaMotor001 {

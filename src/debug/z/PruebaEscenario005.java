@@ -1,7 +1,7 @@
 package debug.z;
 
-import com.rpg.ente.*;
-import com.rpg.motor.Navegador;
+import com.ente.*;
+import com.motor.Navegador;
 import com.rpg.teatro.Escena;
 import herramientas.guardado.GestorGuardado;
 import herramientas.tiempo.CalendarioLunar;

@@ -1,9 +1,9 @@
 package debug.z;
 
-import com.rpg.ente.*;
+import com.ente.*;
 
-import herramientas.clima.Estacion;
-import herramientas.tiempo.*;
+import com.herramientas.clima.Estacion;
+import com.herramientas.tiempo.*;
 
 public class PruebaAtributosTiempo000 {
     public static void main(String[] args) {

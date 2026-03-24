@@ -1,12 +1,12 @@
 package debug.z;
 
-import com.rpg.combate.ArbitroCombate;
-import com.rpg.combate.AtaqueBase;
-import com.rpg.ente.Atributo;
-import com.rpg.ente.Creador;
-import com.rpg.ente.Ente;
-import com.rpg.ente.Funcion;
-import com.rpg.ente.ParteDelCuerpo;
+import com.combate.ArbitroCombate;
+import com.combate.AtaqueBase;
+import com.ente.Atributo;
+import com.ente.Creador;
+import com.ente.Ente;
+import com.ente.Funcion;
+import com.ente.ParteDelCuerpo;
 
 import herramientas.texto.Narrador;
 

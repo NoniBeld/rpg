@@ -1,6 +1,6 @@
 package debug.z;
 
-import com.rpg.motor.MotorJuego;
+import com.motor.MotorJuego;
 import com.rpg.teatro.Escena;
 
 import herramientas.clima.Clima;

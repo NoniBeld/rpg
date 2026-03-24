@@ -1,11 +1,11 @@
 package debug.z;
 
-import com.rpg.ente.*;
+import com.combate.ArbitroCombate;
+import com.combate.AtaqueBase;
+import com.ente.*;
 import com.rpg.ente.bestiario.fauna.*;
 import com.rpg.ente.bestiario.flora.Musgo;
 import com.rpg.ente.bestiario.elemento.Hidrogeno;
-import com.rpg.combate.ArbitroCombate;
-import com.rpg.combate.AtaqueBase;
 
 import herramientas.texto.Narrador;
 
